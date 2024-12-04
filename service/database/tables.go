@@ -9,7 +9,6 @@ var usersCollection = `CREATE TABLE IF NOT EXIST usersCollection(
 var user = `CREATE TABLE IF NOT EXIST user(
 	userId INTEGER NOT NULL,
 	userName TEXT NOT NULL,
-	profileImage TEXT,
 	groupsCollectionId INTEGER NOT NULL,
 	chatsCollectionId INTEGER NOT NULL,
 	PRIMARY KEY (userId),
@@ -27,7 +26,6 @@ var groupsCollection = `CREATE TABLE IF NOT EXIST groupsCollection(
 var group = `CREATE TABLE IF NOT EXIST group(
 	groupId INTEGER NOT NULL,
 	groupName TEXT NOT NULL,
-	groupImage TEXT,
 	PRIMARY KEY (groupId),
 )`
 
@@ -37,7 +35,7 @@ var messagesCollection = `CREATE TABLE IF NOT EXIST messagesCollection(
 	PRIMARY KEY (collectionId, messageId),
 	FOREIGN KEY (messageId) REFERENCES message(messageId),
 	)`
-	
+
 var message = `CREATE TABLE IF NOT EXIST message(
 	messageId INTEGER NOT NULL,
 	sender INTEGER NOT NULL,
@@ -48,7 +46,7 @@ var message = `CREATE TABLE IF NOT EXIST message(
 	FOREIGN KEY sender REFERENCES user(userId),
 	FOREIGN KEY chat REFERENCES chat(chatId),
 	)`
-		
+
 var chatsCollection = `CREATE TABLE IF NOT EXIST chatsCollection(
 	collectionId INTEGER NOT NULL,
 	chatId INTEGER NOT NULL,

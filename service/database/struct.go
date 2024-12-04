@@ -3,25 +3,27 @@ package database
 import "time"
 
 type User struct {
-	userId int `json:"id"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Message struct {
-	messageId int `json:"mess_id"`
-	chatId int `json:"chat_id"`
-	sender User `json:"sender"`
-	date time.Time `json:"date"`
-	content string `json:"content"`
-	comment string `json:"comment"`
+	Id      int       `json:"id"`
+	ChatId  int       `json:"chat_id"`
+	Sender  User      `json:"sender"`
+	Date    time.Time `json:"date"`
+	Content string    `json:"content"`
+	Comment string    `json:"comment"`
 }
 
 type Group struct {
-	groupId int `json:"id"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type Chat struct {
-	chatId int `json:"id_of_chat"`
-	chatName string `json:"chat_name"`
-	members []User `json:"members"`
-	messages []Message `json:"messages"`
+	Id       int       `json:"id"`
+	Name     string    `json:"name"`
+	Members  []User    `json:"members"`
+	Messages []Message `json:"messages"`
 }

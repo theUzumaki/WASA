@@ -38,6 +38,8 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
+	newUser(user User) error
+
 	Ping() error
 }
 
