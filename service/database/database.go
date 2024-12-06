@@ -40,6 +40,8 @@ import (
 type AppDatabase interface {
 	LoginManager(user User) (string, error)
 
+	SetName(oldname string, newname string) error
+
 	Ping() error
 }
 

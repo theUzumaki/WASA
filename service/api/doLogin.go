@@ -10,9 +10,10 @@ import (
 )
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var userName string
+	var user User
 
-	err := json.NewDecoder(r.Body).Decode(&userName)
+	err := json.NewDecoder(r.Body).Decode(&user)
+	var userName = user.Name
 
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
@@ -25,7 +26,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	user := User{
+	user = User{
 		Id:   -1,
 		Name: userName,
 	}
