@@ -42,6 +42,10 @@ type AppDatabase interface {
 
 	SetName(oldname string, newname string) error
 
+	LeaveGroup(idgroup string) error
+
+	GetMembers(searchname string) (*sql.Rows, error)
+
 	Ping() error
 }
 

@@ -40,6 +40,7 @@ func (message Message) ApiMessageToDB() database.Message {
 	return newMessage
 }
 
+/*
 type Group struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`
@@ -53,6 +54,7 @@ func (group Group) ApiGroupToDB() database.Group {
 	}
 	return newGroup
 }
+*/
 
 type Chat struct {
 	Id       int       `json:"id"`
