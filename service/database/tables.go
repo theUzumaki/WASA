@@ -1,19 +1,18 @@
 package database
 
-var usersCollection = `CREATE TABLE IF NOT EXIST usersCollection(
+var usersCollection = `CREATE TABLE IF NOT EXISTS usersCollection (
 	collectionId INTEGER NOT NULL,
 	userId INTEGER NOT NULL,
-	PRIMARY KEY (collectionId, userId),
-)`
+	PRIMARY KEY (collectionId, userId)
+);`
 
-var users = `CREATE TABLE IF NOT EXIST users(
+var users = `CREATE TABLE IF NOT EXISTS users (
 	userId INTEGER NOT NULL,
 	userName TEXT NOT NULL,
 	chatsCollectionId INTEGER NOT NULL,
 	PRIMARY KEY (userId),
-	FOREIGN KEY (groupsCollectionId) REFERENCES groupsCollection(collectionId),
-	FOREIGN KEY (chatsCollectionId) REFERENCES chats(collectionId),
-)`
+	FOREIGN KEY (chatsCollectionId) REFERENCES chats(collectionId)
+);`
 
 /*
 var groupsCollection = `CREATE TABLE IF NOT EXIST groupsCollection(
@@ -30,32 +29,32 @@ var group = `CREATE TABLE IF NOT EXIST group(
 )`
 */
 
-var messagesCollection = `CREATE TABLE IF NOT EXIST messagesCollection(
+var messagesCollection = `CREATE TABLE IF NOT EXISTS messagesCollection (
 	collectionId INTEGER NOT NULL,
 	messageId INTEGER NOT NULL,
 	PRIMARY KEY (collectionId, messageId),
-	FOREIGN KEY (messageId) REFERENCES message(messageId),
-	)`
+	FOREIGN KEY (messageId) REFERENCES message(messageId)
+);`
 
-var message = `CREATE TABLE IF NOT EXIST message(
+var message = `CREATE TABLE IF NOT EXISTS message (
 	messageId INTEGER NOT NULL,
 	sender INTEGER NOT NULL,
 	chat INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	content TEXT,
 	PRIMARY KEY (messageId),
-	FOREIGN KEY sender REFERENCES user(userId),
-	FOREIGN KEY chat REFERENCES chat(chatId),
-	)`
+	FOREIGN KEY (sender) REFERENCES user(userId),
+	FOREIGN KEY (chat) REFERENCES chat(chatId)
+);`
 
-var chatsCollection = `CREATE TABLE IF NOT EXIST chatsCollection(
+var chatsCollection = `CREATE TABLE IF NOT EXISTS chatsCollection (
 	collectionId INTEGER NOT NULL,
 	chatId INTEGER NOT NULL,
 	PRIMARY KEY (collectionId, chatId),
-	FOREIGN KEY (chatId) REFERENCES chat(chatId),
-)`
+	FOREIGN KEY (chatId) REFERENCES chat(chatId)
+);`
 
-var chat = `CREATE TABLE IF NOT EXIST chat(
+var chat = `CREATE TABLE IF NOT EXISTS chat (
 	chatId INTEGER NOT NULL,
 	chatName TEXT,
 	members INTEGER NOT NULL,
@@ -63,4 +62,4 @@ var chat = `CREATE TABLE IF NOT EXIST chat(
 	PRIMARY KEY (chatId),
 	FOREIGN KEY (members) REFERENCES chatsCollection(collectionId),
 	FOREIGN KEY (messages) REFERENCES messagesCollection(collectionId)
-)`
+);`

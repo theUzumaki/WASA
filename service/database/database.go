@@ -61,13 +61,35 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure
-	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
-		_, err = db.Exec(sqlStmt)
+	var tableNum int
+	err := db.QueryRow(`SELECT COUNT(name) FROM sqlite_master WHERE type='table';`).Scan(&tableNum)
+	if err != nil {
+		return nil, err
+	}
+	if tableNum != 6 {
+		_, err = db.Exec(usersCollection)
 		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
+			return nil, fmt.Errorf("UsersCollection table creation error %w", err)
+		}
+		_, err = db.Exec(users)
+		if err != nil {
+			return nil, fmt.Errorf("users table creation error %w", err)
+		}
+		_, err = db.Exec(messagesCollection)
+		if err != nil {
+			return nil, fmt.Errorf("MessagesCollection table creation error %w", err)
+		}
+		_, err = db.Exec(message)
+		if err != nil {
+			return nil, fmt.Errorf("Message table creation error %w", err)
+		}
+		_, err = db.Exec(chatsCollection)
+		if err != nil {
+			return nil, fmt.Errorf("ChatsCollection table creation error %w", err)
+		}
+		_, err = db.Exec(chat)
+		if err != nil {
+			return nil, fmt.Errorf("Chat table creation error %w", err)
 		}
 	}
 
