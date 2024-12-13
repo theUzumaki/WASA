@@ -66,6 +66,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("DATABASE CREATION")
 	if tableNum != 6 {
 		_, err = db.Exec(usersCollection)
 		if err != nil {

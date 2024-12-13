@@ -9,7 +9,7 @@ var usersCollection = `CREATE TABLE IF NOT EXISTS usersCollection (
 var users = `CREATE TABLE IF NOT EXISTS users (
 	userId INTEGER NOT NULL,
 	userName TEXT NOT NULL,
-	chatsCollectionId INTEGER NOT NULL,
+	chatsCollectionId INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY (userId),
 	FOREIGN KEY (chatsCollectionId) REFERENCES chats(collectionId)
 );`
