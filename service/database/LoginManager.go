@@ -8,8 +8,16 @@ import (
 
 func (db *appdbimpl) LoginManager(user User) (string, error) {
 
+	fmt.Println("NAME SEARCHING FOR: <" + user.Name + ">")
 	row := db.c.QueryRow("SELECT * FROM users WHERE userName = ?", user.Name)
-	if row.Scan(nil) == nil {
+	if row.Err() != nil {
+		log.Fatal(row.Err())
+	}
+
+	void1 := ""
+	void2 := ""
+	err := row.Scan(&void1, &void2)
+	if err == row.Err() {
 		return "user exist", nil
 	}
 
@@ -19,20 +27,16 @@ func (db *appdbimpl) LoginManager(user User) (string, error) {
 	user.Id = id + 1
 
 	fmt.Println("id: " + strconv.Itoa(user.Id) + " name: " + user.Name)
-	_, err := db.c.Query("INSERT INTO users (userId, userName) VALUES (?, ?)", user.Id, user.Name)
+	_, err = db.c.Exec("INSERT INTO users (userId, userName) VALUES (?, ?);", user.Id, user.Name)
 	if err != nil {
-		fmt.Println("FIRST ERROR")
 		log.Fatal(err)
 	}
 
-	rowcheck, errcheck := db.c.Query("SELECT * FROM users")
-	if errcheck != nil {
-		fmt.Println("SECOND ERROR")
-		log.Fatal(errcheck)
-	}
+	row = db.c.QueryRow("SELECT userName FROM users WHERE userName = ?", user.Name)
+
 	var name string
-	rowcheck.Scan(&name)
-	result := "ROW: " + name
+	row.Scan(&name)
+	result := "ROW: <" + name + ">"
 	fmt.Println(result)
 	return "", nil
 }

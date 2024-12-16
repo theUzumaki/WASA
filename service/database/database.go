@@ -66,31 +66,30 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("DATABASE CREATION")
 	if tableNum != 6 {
-		_, err = db.Exec(usersCollection)
-		if err != nil {
-			return nil, fmt.Errorf("UsersCollection table creation error %w", err)
-		}
 		_, err = db.Exec(users)
 		if err != nil {
 			return nil, fmt.Errorf("users table creation error %w", err)
 		}
-		_, err = db.Exec(messagesCollection)
+		_, err = db.Exec(messages)
 		if err != nil {
-			return nil, fmt.Errorf("MessagesCollection table creation error %w", err)
+			return nil, fmt.Errorf("messages table creation error %w", err)
 		}
-		_, err = db.Exec(message)
+		_, err = db.Exec(chats)
 		if err != nil {
-			return nil, fmt.Errorf("Message table creation error %w", err)
+			return nil, fmt.Errorf("chats table creation error %w", err)
 		}
-		_, err = db.Exec(chatsCollection)
+		_, err = db.Exec(chat_message)
 		if err != nil {
-			return nil, fmt.Errorf("ChatsCollection table creation error %w", err)
+			return nil, fmt.Errorf("chat_message table creation error %w", err)
 		}
-		_, err = db.Exec(chat)
+		_, err = db.Exec(chat_user)
 		if err != nil {
-			return nil, fmt.Errorf("Chat table creation error %w", err)
+			return nil, fmt.Errorf("chat_user table creation error %w", err)
+		}
+		_, err = db.Exec(message_user)
+		if err != nil {
+			return nil, fmt.Errorf("message_user table creation error %w", err)
 		}
 	}
 

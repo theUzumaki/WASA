@@ -1,65 +1,44 @@
 package database
 
-var usersCollection = `CREATE TABLE IF NOT EXISTS usersCollection (
-	collectionId INTEGER NOT NULL,
-	userId INTEGER NOT NULL,
-	PRIMARY KEY (collectionId, userId)
-);`
-
 var users = `CREATE TABLE IF NOT EXISTS users (
 	userId INTEGER NOT NULL,
 	userName TEXT NOT NULL,
-	chatsCollectionId INTEGER NOT NULL DEFAULT 0,
-	PRIMARY KEY (userId),
-	FOREIGN KEY (chatsCollectionId) REFERENCES chats(collectionId)
+	PRIMARY KEY (userId)
 );`
 
-/*
-var groupsCollection = `CREATE TABLE IF NOT EXIST groupsCollection(
-	collectionId INTEGER NOT NULL,
-	groupId INTEGER NOT NULL,
-	PRIMARY KEY (collectionId, groupId),
-	FOREIGN KEY (groupId) REFERENCES group(groupId),
-)`
-
-var group = `CREATE TABLE IF NOT EXIST group(
-	groupId INTEGER NOT NULL,
-	groupName TEXT NOT NULL,
-	PRIMARY KEY (groupId),
-)`
-*/
-
-var messagesCollection = `CREATE TABLE IF NOT EXISTS messagesCollection (
-	collectionId INTEGER NOT NULL,
+var messages = `CREATE TABLE IF NOT EXISTS messages (
 	messageId INTEGER NOT NULL,
-	PRIMARY KEY (collectionId, messageId),
-	FOREIGN KEY (messageId) REFERENCES message(messageId)
-);`
-
-var message = `CREATE TABLE IF NOT EXISTS message (
-	messageId INTEGER NOT NULL,
-	sender INTEGER NOT NULL,
-	chat INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	content TEXT,
-	PRIMARY KEY (messageId),
-	FOREIGN KEY (sender) REFERENCES user(userId),
-	FOREIGN KEY (chat) REFERENCES chat(chatId)
+	PRIMARY KEY (messageId)
 );`
 
-var chatsCollection = `CREATE TABLE IF NOT EXISTS chatsCollection (
-	collectionId INTEGER NOT NULL,
+var chats = `CREATE TABLE IF NOT EXISTS chats (
 	chatId INTEGER NOT NULL,
-	PRIMARY KEY (collectionId, chatId),
-	FOREIGN KEY (chatId) REFERENCES chat(chatId)
+	chatName TEXT NOT NULL,
+	PRIMARY KEY (chatId)
 );`
 
-var chat = `CREATE TABLE IF NOT EXISTS chat (
+var chat_message = `CREATE TABLE IF NOT EXISTS chat_message (
 	chatId INTEGER NOT NULL,
-	chatName TEXT,
-	members INTEGER NOT NULL,
-	messages INTEGER NOT NULL,
-	PRIMARY KEY (chatId),
-	FOREIGN KEY (members) REFERENCES chatsCollection(collectionId),
-	FOREIGN KEY (messages) REFERENCES messagesCollection(collectionId)
+	messageId INTEGER NOT NULL,
+	PRIMARY KEY (chatId, messageId),
+	FOREIGN KEY (chatId) REFERENCES chats(chatId)
+	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+);`
+
+var chat_user = `CREATE TABLE IF NOT EXISTS chat_user (
+	userId INTEGER NOT NULL,
+	chatId INTEGER NOT NULL,
+	PRIMARY KEY (userId, chatId),
+	FOREIGN KEY (chatId) REFERENCES chats(chatId)
+	FOREIGN KEY (userId) REFERENCES users(userId)
+);`
+
+var message_user = `CREATE TABLE IF NOT EXISTS message_user (
+	messageId INTEGER NOT NULL,
+	userId INTEGER NOT NULL,
+	PRIMARY KEY (messageId, userId),
+	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+	FOREIGN KEY (userId) REFERENCES users(userId)
 );`
