@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -12,20 +14,23 @@ import (
 func (rt *_router) setNameApi(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var id = ps.ByName("id")
-	var newname string
-	err := json.NewDecoder(r.Body).Decode(&newname)
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
+
+	fmt.Println("NAME RECEIVED: " + user.Name)
 	if err != nil {
+		log.Fatal(err.Error())
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	var valid = regexp.MustCompile("^.*?$").MatchString(newname)
+	var valid = regexp.MustCompile("^.*?$").MatchString(user.Name)
 	if !valid {
 		http.Error(w, "Username not valid", http.StatusExpectationFailed)
 		return
 	}
 
-	err = rt.db.SetName(id, newname)
+	err = rt.db.SetName(id, user.Name)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

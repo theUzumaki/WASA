@@ -42,6 +42,8 @@ type AppDatabase interface {
 
 	SetName(oldname string, newname string) error
 
+	NewChat(id string, chat Chat) error
+
 	LeaveGroup(idgroup string) error
 
 	GetMembers(searchname string) (*sql.Rows, error)

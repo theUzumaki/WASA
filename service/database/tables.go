@@ -28,9 +28,9 @@ var chat_message = `CREATE TABLE IF NOT EXISTS chat_message (
 );`
 
 var chat_user = `CREATE TABLE IF NOT EXISTS chat_user (
-	userId INTEGER NOT NULL,
 	chatId INTEGER NOT NULL,
-	PRIMARY KEY (userId, chatId),
+	userId INTEGER NOT NULL,
+	PRIMARY KEY (chatId, userId),
 	FOREIGN KEY (chatId) REFERENCES chats(chatId)
 	FOREIGN KEY (userId) REFERENCES users(userId)
 );`

@@ -17,6 +17,7 @@ func (rt *_router) Handler() http.Handler {
 
 	// User routes
 	rt.router.PUT("/users/:id/name", rt.wrap(rt.setNameApi))
+	rt.router.POST("/users/:id/conversations", rt.wrap(rt.newChatApi))
 
 	return rt.router
 }

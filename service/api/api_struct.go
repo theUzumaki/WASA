@@ -66,22 +66,14 @@ type Chat struct {
 
 func (chat Chat) ApiChatToDB() database.Chat {
 
-	var members []User
-	var s_members []User = members[0:len(chat.Members)]
-	var newMembers []database.User
-	var s_newMembers []database.User = newMembers[:len(chat.Members)]
-
-	for i := 0; i < len(s_members); i++ {
-		s_newMembers = append(s_newMembers, s_members[i].ApiUserToDB())
+	var s_newMembers []database.User = make([]database.User, len(chat.Members))
+	for i := 0; i < len(chat.Members); i++ {
+		s_newMembers[i] = chat.Members[i].ApiUserToDB()
 	}
 
-	var messages []Message
-	var s_Messages []Message = messages[0:len(chat.Messages)]
-	var newMessages []database.Message
-	var s_newMessages []database.Message = newMessages[0:len(chat.Messages)]
-
-	for i := 0; i < len(s_Messages); i++ {
-		s_newMessages = append(s_newMessages, s_Messages[i].ApiMessageToDB())
+	var s_newMessages []database.Message = make([]database.Message, len(chat.Messages))
+	for i := 0; i < len(chat.Messages); i++ {
+		s_newMessages = append(s_newMessages, chat.Messages[i].ApiMessageToDB())
 	}
 
 	newChat := database.Chat{

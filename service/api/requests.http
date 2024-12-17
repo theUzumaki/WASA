@@ -1,6 +1,21 @@
+POST http://localhost:3000/users/1/conversations HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Calcetto",
+    "members": [{ "id": 1, "name": "matt" }, {"id": 2, "name": "lachita"}]
+}
+
 POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
     "name": "lachi"
+}
+
+PUT http://localhost:3000/users/2/name HTTP/1.1
+content-type: application/json
+
+{
+    "name": "lachita"
 }
