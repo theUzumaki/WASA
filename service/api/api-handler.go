@@ -16,8 +16,11 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/session", rt.wrap(rt.doLogin))
 
 	// User routes
-	rt.router.PUT("/users/:id/name", rt.wrap(rt.setNameApi))
-	rt.router.POST("/users/:id/conversations", rt.wrap(rt.newChatApi))
+	rt.router.PUT("/users/:id/name", rt.wrap(rt.setName))
+	rt.router.POST("/users/:id/conversations", rt.wrap(rt.newChat))
+
+	// Group routes
+	rt.router.DELETE("/users/:id/groups/:group_id", rt.wrap(rt.leaveGroup))
 
 	return rt.router
 }

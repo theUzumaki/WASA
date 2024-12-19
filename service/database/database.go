@@ -44,7 +44,7 @@ type AppDatabase interface {
 
 	NewChat(id string, chat Chat) error
 
-	LeaveGroup(idgroup string) error
+	LeaveGroup(idgroup string, iduser string) error
 
 	GetMembers(searchname string) (*sql.Rows, error)
 

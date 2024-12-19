@@ -24,7 +24,9 @@ var chat_message = `CREATE TABLE IF NOT EXISTS chat_message (
 	messageId INTEGER NOT NULL,
 	PRIMARY KEY (chatId, messageId),
 	FOREIGN KEY (chatId) REFERENCES chats(chatId)
+		ON DELETE CASCADE
 	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
 );`
 
 var chat_user = `CREATE TABLE IF NOT EXISTS chat_user (
@@ -32,7 +34,9 @@ var chat_user = `CREATE TABLE IF NOT EXISTS chat_user (
 	userId INTEGER NOT NULL,
 	PRIMARY KEY (chatId, userId),
 	FOREIGN KEY (chatId) REFERENCES chats(chatId)
+		ON DELETE CASCADE
 	FOREIGN KEY (userId) REFERENCES users(userId)
+		ON DELETE CASCADE
 );`
 
 var message_user = `CREATE TABLE IF NOT EXISTS message_user (
@@ -40,5 +44,7 @@ var message_user = `CREATE TABLE IF NOT EXISTS message_user (
 	userId INTEGER NOT NULL,
 	PRIMARY KEY (messageId, userId),
 	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
 	FOREIGN KEY (userId) REFERENCES users(userId)
+		ON DELETE CASCADE
 );`

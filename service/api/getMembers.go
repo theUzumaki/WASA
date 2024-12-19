@@ -2,8 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -11,26 +9,23 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) setNameApi(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getMembers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var id = ps.ByName("id")
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
-
-	fmt.Println("NAME RECEIVED: " + user.Name)
+	var newname string
+	err := json.NewDecoder(r.Body).Decode(&newname)
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	var valid = regexp.MustCompile("^.*?$").MatchString(user.Name)
+	var valid = regexp.MustCompile("^.*?$").MatchString(newname)
 	if !valid {
 		http.Error(w, "Username not valid", http.StatusExpectationFailed)
 		return
 	}
 
-	err = rt.db.SetName(id, user.Name)
+	err = rt.db.SetName(id, newname)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
