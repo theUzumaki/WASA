@@ -46,7 +46,7 @@ type AppDatabase interface {
 
 	LeaveGroup(idgroup string, iduser string) error
 
-	GetMembers(searchname string) (*sql.Rows, error)
+	getMyConversations(id string) []Chat
 
 	Ping() error
 }

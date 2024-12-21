@@ -12,12 +12,13 @@ func (rt *_router) Handler() http.Handler {
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 
-	// Login
+	// Session
 	rt.router.POST("/session", rt.wrap(rt.doLogin))
 
 	// User routes
 	rt.router.PUT("/users/:id/name", rt.wrap(rt.setName))
 	rt.router.POST("/users/:id/conversations", rt.wrap(rt.newChat))
+	rt.router.GET("/users/:id/conversations", rt.wrap(rt.getMyConversations))
 
 	// Group routes
 	rt.router.DELETE("/users/:id/groups/:group_id", rt.wrap(rt.leaveGroup))

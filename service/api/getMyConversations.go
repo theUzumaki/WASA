@@ -1,0 +1,30 @@
+package api
+
+import (
+	"encoding/json"
+	"net/http"
+	"wasatext/service/api/reqcontext"
+
+	"github.com/julienschmidt/httprouter"
+)
+
+func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+
+	var user string
+	user = ps.ByName("id")
+
+	if user == "" {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	chats, err := rt.db.getMyConversations(user)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(chats)
+}
