@@ -10,15 +10,14 @@ import (
 
 func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var user string
-	user = ps.ByName("id")
+	user := ps.ByName("id")
 
 	if user == "" {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	chats, err := rt.db.getMyConversations(user)
+	chats, err := rt.db.GetMyConversations(user)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

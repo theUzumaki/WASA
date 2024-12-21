@@ -1,12 +1,13 @@
-POST http://localhost:3000/users/1/conversations HTTP/1.1
+### create user 1
+
+POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
 
 {
-    "name": "Calcetto",
-    "members": [{ "id": 1, "name": "matt" }, {"id": 2, "name": "lachita"}]
+    "name": "matt"
 }
 
-###
+### create user 2
 
 POST http://localhost:3000/session HTTP/1.1
 content-type: application/json
@@ -15,7 +16,17 @@ content-type: application/json
     "name": "lachi"
 }
 
-###
+### new chat
+
+POST http://localhost:3000/users/1/conversations HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Calcetto",
+    "members": [{ "id": 1, "name": "matt" }, {"id": 2, "name": "lachita"}]
+}
+
+### change name
 
 PUT http://localhost:3000/users/2/name HTTP/1.1
 content-type: application/json
@@ -24,12 +35,17 @@ content-type: application/json
     "name": "lachitha"
 }
 
-###
+### leave group 1
 
 DELETE http://localhost:3000/users/1/groups/1 HTTP/1.1
 content-type: application/json
 
-###
+### leave group 2
 
 DELETE http://localhost:3000/users/2/groups/1 HTTP/1.1
 content-type: application/json
+
+### getConvs
+
+GET http://localhost:3000/users/1/conversations HTTP/1.1
+Content-Type: application/json

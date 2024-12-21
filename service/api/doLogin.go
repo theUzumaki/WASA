@@ -10,8 +10,8 @@ import (
 )
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var user User
 
+	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	var userName = user.Name
 
@@ -32,7 +32,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	var status string
-	status, err = rt.db.LoginManager(user.ApiUserToDB())
+	id, status, err := rt.db.LoginManager(user.ApiUserToDB())
 
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -45,4 +45,5 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusCreated)
 	}
 	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(id)
 }
