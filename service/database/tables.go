@@ -9,7 +9,8 @@ var users = `CREATE TABLE IF NOT EXISTS users (
 var messages = `CREATE TABLE IF NOT EXISTS messages (
 	messageId INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
-	content TEXT,
+	content TEXT NOT NULL,
+	comment TEXT DEFAULT NULL,
 	PRIMARY KEY (messageId)
 );`
 

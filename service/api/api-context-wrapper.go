@@ -14,7 +14,7 @@ import (
 type httpRouterHandler func(http.ResponseWriter, *http.Request, httprouter.Params, reqcontext.RequestContext)
 
 // wrap parses the request and adds a reqcontext.RequestContext instance related to the request.
-func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func (rt *_router) wrap(fn httpRouterHandler, securityCheck bool) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		reqUUID, err := uuid.NewV4()
 		if err != nil {
@@ -22,8 +22,19 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+
+		id_check := ps.ByName("id")
+		var id string
+		if securityCheck {
+			id = r.Header.Get("Authorization")
+			if id != id_check {
+				http.Error(w, "Access denied", http.StatusForbidden)
+			}
+		}
+
 		var ctx = reqcontext.RequestContext{
 			ReqUUID: reqUUID,
+			Token:   id,
 		}
 
 		// Create a request-specific logger

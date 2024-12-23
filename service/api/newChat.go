@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -16,9 +15,12 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 	var chat Chat
 	var err error
 
+	if id != ctx.Token {
+		return
+	}
+
 	err = json.NewDecoder(r.Body).Decode(&chat)
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}

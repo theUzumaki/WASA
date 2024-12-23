@@ -8,21 +8,21 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getConversation(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	user := ps.ByName("id")
+	chatId := ps.ByName("chat_id")
 	userId := ps.ByName("id")
 
 	if userId != ctx.Token {
 		return
 	}
 
-	if user == "" {
+	if chatId == "" {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	chats, err := rt.db.GetMyConversations(user)
+	chat, err := rt.db.GetConversation(chatId)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -30,5 +30,5 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(chats)
+	json.NewEncoder(w).Encode(chat)
 }

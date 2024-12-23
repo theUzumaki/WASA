@@ -46,7 +46,11 @@ type AppDatabase interface {
 
 	LeaveGroup(idgroup string, iduser string) error
 
+	AddToGroup(iduser string, idchat string, newiduser string) error
+
 	GetMyConversations(id string) ([]Chat, error)
+
+	GetConversation(id string) (Chat, error)
 
 	Ping() error
 }

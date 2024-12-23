@@ -2,8 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -17,9 +15,11 @@ func (rt *_router) setName(w http.ResponseWriter, r *http.Request, ps httprouter
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
-	fmt.Println("NAME RECEIVED: " + user.Name)
+	if id != ctx.Token {
+		return
+	}
+
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}

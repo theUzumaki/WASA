@@ -33,11 +33,19 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var status string
 	id, status, err := rt.db.LoginManager(user.ApiUserToDB())
-
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	type token struct {
+		UserId int `json:"userId"`
+		Token  int `json:"token"`
+	}
+	var tok token
+
+	tok.UserId = id
+	tok.Token = id
 
 	if status == "user exist" {
 		w.WriteHeader(http.StatusOK)
@@ -45,5 +53,5 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusCreated)
 	}
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(id)
+	json.NewEncoder(w).Encode(tok)
 }
