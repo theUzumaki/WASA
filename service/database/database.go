@@ -40,7 +40,7 @@ import (
 type AppDatabase interface {
 	LoginManager(user User) (int, string, error)
 
-	SetName(oldname string, newname string) error
+	SetName(id string, newname string) error
 
 	NewChat(id string, chat Chat) error
 
@@ -48,9 +48,17 @@ type AppDatabase interface {
 
 	AddToGroup(iduser string, idchat string, newiduser string) error
 
+	SetGroupName(id string, newname string) error
+
 	GetMyConversations(id string) ([]Chat, error)
 
 	GetConversation(id string) (Chat, error)
+
+	SendMessage(message Message, userid string, chatid string) error
+
+	ForwardMessage(userid string, messageid string, chatid string) error
+
+	DeleteMessage(messageid string) error
 
 	Ping() error
 }

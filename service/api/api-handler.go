@@ -24,6 +24,12 @@ func (rt *_router) Handler() http.Handler {
 	// Group routes
 	rt.router.DELETE("/users/:id/groups/:group_id", rt.wrap(rt.leaveGroup, true))
 	rt.router.PUT("/users/:id/groups/:group_id", rt.wrap(rt.addToGroup, true))
+	rt.router.PUT("/users/:id/groups/:group_id/name", rt.wrap(rt.setGroupName, true))
+
+	// Message routes
+	rt.router.POST("/users/:id/conversations/:chat_id", rt.wrap(rt.sendMessage, true))
+	rt.router.POST("/users/:id/conversations/:chat_id/message/:message_id", rt.wrap(rt.forwardMessage, true))
+	rt.router.DELETE("/users/:id/conversations/:chat_id/message/:message_id", rt.wrap(rt.deleteMessage, true))
 
 	return rt.router
 }

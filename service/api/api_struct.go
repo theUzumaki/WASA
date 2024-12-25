@@ -5,6 +5,10 @@ import (
 	"wasatext/service/database"
 )
 
+type id struct {
+	Id string `json:"id"`
+}
+
 type User struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`

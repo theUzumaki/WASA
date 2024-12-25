@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"wasatext/service/api/reqcontext"
@@ -28,7 +27,6 @@ func (rt *_router) addToGroup(w http.ResponseWriter, r *http.Request, ps httprou
 
 	err = rt.db.AddToGroup(userid, chatid, strconv.Itoa(newuser.Id))
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

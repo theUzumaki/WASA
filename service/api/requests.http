@@ -71,7 +71,7 @@ Authorization: 1
 
 ### addToGroup 3
 
-PUT  http://localhost:3000/users/1/groups/2 HTTP/1.1
+PUT  http://localhost:3000/users/1/groups/1 HTTP/1.1
 Content-Type: application/json
 Authorization: 1
 
@@ -79,3 +79,39 @@ Authorization: 1
     "id": 3,
     "name": "eros"
 }
+
+### setNameGroup 1
+
+PUT  http://localhost:3000/users/1/groups/1/name HTTP/1.1
+Content-Type: application/json
+Authorization: 1
+
+{
+    "name": "calcetto di natale"
+}
+
+### sendMessage
+
+POST  http://localhost:3000/users/1/conversations/1 HTTP/1.1
+Content-Type: application/json
+Authorization: 1
+
+{
+    "content": "Domani va bene"
+}
+
+### forwardMessage
+
+POST  http://localhost:3000/users/2/conversations/1/message/1 HTTP/1.1
+Content-Type: application/json
+Authorization: 2
+
+{
+    "id": "1"
+}
+
+### deleteMessage
+
+DELETE  http://localhost:3000/users/1/conversations/1/message/1 HTTP/1.1
+Content-Type: application/json
+Authorization: 1
