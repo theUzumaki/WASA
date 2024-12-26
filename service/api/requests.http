@@ -115,3 +115,45 @@ Authorization: 2
 DELETE  http://localhost:3000/users/1/conversations/1/message/1 HTTP/1.1
 Content-Type: application/json
 Authorization: 1
+
+### commentMessage
+
+PUT  http://localhost:3000/users/1/conversations/1/message/2/comment HTTP/1.1
+Content-Type: application/json
+Authorization: 1
+
+{
+    "content": "😁"
+}
+
+### uncommentMessage
+
+DELETE  http://localhost:3000/users/1/conversations/1/message/2/comment HTTP/1.1
+Content-Type: application/json
+Authorization: 1
+
+### setMyPhoto
+
+PUT  http://localhost:3000/users/1/picture HTTP/1.1
+Authorization: 1
+Content-Type: multipart/form-data; boundary=--WebKitFormBoundary
+
+----WebKitFormBoundary
+Content-Disposition: form-data; name="image"; filename="profilepic.jpeg"
+Content-Type: image/jpeg
+
+< ./profilepic.jpeg
+----WebKitFormBoundary--
+
+### setGroupPhoto
+
+PUT  http://localhost:3000/users/1/groups/1/picture HTTP/1.1
+Authorization: 1
+Content-Type: multipart/form-data; boundary=--WebKitFormBoundary
+
+----WebKitFormBoundary
+Content-Disposition: form-data; name="image"; filename="grouppic.jpeg"
+Content-Type: image/jpeg
+
+< ./grouppic.jpg
+----WebKitFormBoundary--

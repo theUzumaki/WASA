@@ -9,6 +9,10 @@ type id struct {
 	Id string `json:"id"`
 }
 
+type text struct {
+	Text string `json:"content"`
+}
+
 type User struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`

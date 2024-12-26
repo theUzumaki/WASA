@@ -60,6 +60,10 @@ type AppDatabase interface {
 
 	DeleteMessage(messageid string) error
 
+	CommentMessage(comment string, messageid string) error
+
+	UncommentMessage(messageid string) error
+
 	Ping() error
 }
 
