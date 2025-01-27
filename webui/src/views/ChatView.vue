@@ -4,14 +4,14 @@ export default {
 		return {
 			errormsg: null,
 			loading: false,
-			chat: JSON.parse(sessionStorage.chat).messages
+			messages: JSON.parse(sessionStorage.chat).messages
 		}
 	},
 	methods: {
 		async newMessage(content){
 			try {
-				let response = await this.$axios.post("/users/"+sessionStorage.userId+"/conversations/"+sessionStorage.chat_id, {
-					chat_id: parseInt(sessionStorage.chat_id),
+				let response = await this.$axios.post("/users/"+sessionStorage.userId+"/conversations/"+JSON.parse(sessionStorage.chat).id, {
+					chat_id: JSON.parse(sessionStorage.chat).id,
                     senders: sessionStorage.userId,
                     date: new Date().toISOString(),
 					content: content
@@ -32,10 +32,10 @@ export default {
     <div>
         <div class="homescreen">
             <div class="list-group-item list-group-item-action">
-                <div v-for="message in this.chat">
+                <div v-for="message in this.messages">
                     <div class="d-flex w-100 justify-content-between">
                         <h5 class="mb-1">{{ message.name }}</h5>
-                        <small>{{ message.id }}</small>
+                        <h6 style="margin-right: 100%">{{ message.content }}</h6>
                     </div>
                 </div>
             </div>

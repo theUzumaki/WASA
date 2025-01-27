@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -34,6 +35,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	var status string
 	id, status, err := rt.db.LoginManager(user.ApiUserToDB())
 	if err != nil {
+		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

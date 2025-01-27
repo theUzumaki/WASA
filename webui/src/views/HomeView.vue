@@ -7,6 +7,7 @@ export default {
 			chats: null,
 			users: null,
 			search: false,
+			username: sessionStorage.username,
 		}
 	},
 	methods: {
@@ -23,6 +24,7 @@ export default {
 		},
 		async newChat(userId, username){
 			this.search = false;
+			this.errormsg = null;
 			try {
 				let response = await this.$axios.post("/users/"+sessionStorage.userId+"/conversations", {
 					name: "chat",
@@ -44,8 +46,10 @@ export default {
 			}
 			this.$router.push("/chat");
 		},
-		async getUsers(name){
+		async getUsers(name = ""){
+			this.errormsg = null;
 			try {
+				if (name.length < 3 || name.length > 16) throw "It has to be between 3 and 16 characters long"
 				let response = await this.$axios.get("/users/"+sessionStorage.userId+"/search/"+name, {
 					headers: {
 						"Authorization": sessionStorage.userId
@@ -108,7 +112,7 @@ export default {
 				</div>
 				<div v-if="search" style="position: absolute; top:0px; left:77%">
 					<div v-for="user in users">
-						<button type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name)">
+						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name)">
 							{{ user.name }}
 						</button> <br>
 					</div>

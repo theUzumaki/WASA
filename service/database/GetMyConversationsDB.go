@@ -52,7 +52,7 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 		for rowsMessages.Next() {
 			var message Message
 
-			err := rowsMembers.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
+			err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
 			if err != nil {
 				return nil, err
 			}
