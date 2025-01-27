@@ -41,7 +41,10 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 		for rowsMembers.Next() {
 			var member User
 
-			rowsMembers.Scan(&member.Id, &member.Name)
+			err := rowsMembers.Scan(&member.Id, &member.Name)
+			if err != nil {
+				return nil, err
+			}
 			chat.Members = append(chat.Members, member)
 		}
 
@@ -49,7 +52,10 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 		for rowsMessages.Next() {
 			var message Message
 
-			rowsMembers.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
+			err := rowsMembers.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
+			if err != nil {
+				return nil, err
+			}
 
 			chat.Messages = append(chat.Messages, message)
 		}

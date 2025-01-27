@@ -28,7 +28,7 @@ func (rt *_router) wrap(fn httpRouterHandler, securityCheck bool) func(http.Resp
 		if securityCheck {
 			id = r.Header.Get("Authorization")
 			if id != id_check {
-				http.Error(w, "Access denied", http.StatusForbidden)
+				http.Error(w, "Access denied because "+id+" : "+id_check, http.StatusForbidden)
 			}
 		}
 

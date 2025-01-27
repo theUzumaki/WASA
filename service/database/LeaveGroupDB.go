@@ -15,7 +15,10 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 	row := db.c.QueryRow("SELECT chatId FROM chat_user WHERE chatId = ?", chatId)
 
 	if errors.Is(row.Scan(nil), sql.ErrNoRows) {
-		db.c.Exec("DELETE FROM chats WHERE chatId = ?", chatId)
+		_, err := db.c.Exec("DELETE FROM chats WHERE chatId = ?", chatId)
+		if err != nil {
+			return err
+		}
 	}
 
 	return err

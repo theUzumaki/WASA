@@ -3,9 +3,12 @@ package database
 func (db *appdbimpl) SendMessage(message Message, userid string, chatid string) error {
 
 	row := db.c.QueryRow("SELECT MAX(messageId) FROM messages")
-	row.Scan(&message.Id)
+	err := row.Scan(&message.Id)
+	if err != nil {
+		return err
+	}
 
-	_, err := db.c.Exec("INSERT INTO messages VALUES (?,?,?,?)", message.Id+1, message.Date, message.Content, message.Comment)
+	_, err = db.c.Exec("INSERT INTO messages VALUES (?,?,?,?)", message.Id+1, message.Date, message.Content, message.Comment)
 	if err != nil {
 		return err
 	}

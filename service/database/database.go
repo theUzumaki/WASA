@@ -42,13 +42,17 @@ type AppDatabase interface {
 
 	SetName(id string, newname string) error
 
-	NewChat(id string, chat Chat) error
+	NewChat(id string, chat Chat) (int, error)
 
 	LeaveGroup(idgroup string, iduser string) error
 
 	AddToGroup(iduser string, idchat string, newiduser string) error
 
 	SetGroupName(id string, newname string) error
+
+	GetUserId(name string) (User, error)
+
+	GetUsers(name string) ([]User, error)
 
 	GetMyConversations(id string) ([]Chat, error)
 

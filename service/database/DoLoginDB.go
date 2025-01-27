@@ -16,7 +16,10 @@ func (db *appdbimpl) LoginManager(user User) (int, string, error) {
 	}
 
 	row = db.c.QueryRow("SELECT MAX(userId) FROM users")
-	row.Scan(&id)
+	err = row.Scan(&id)
+	if err != nil {
+		return -1, "", err
+	}
 	user.Id = id + 1
 
 	_, err = db.c.Exec("INSERT INTO users (userId, userName) VALUES (?, ?);", user.Id, user.Name)

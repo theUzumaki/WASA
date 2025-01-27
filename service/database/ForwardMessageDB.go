@@ -9,10 +9,13 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 
 	row := db.c.QueryRow("SELECT MAX(messageId) FROM messages")
 	var newid int
-	row.Scan(&newid)
+	err := row.Scan(&newid)
+	if err != nil {
+		return err
+	}
 
 	row = db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", userid)
-	err := row.Scan(nil, nil)
+	err = row.Scan(nil, nil)
 	if errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
@@ -20,6 +23,9 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 	row = db.c.QueryRow("SELECT * FROM messages WHERE messageId = ?", messageid)
 	var message Message
 	row.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
+	if err != nil {
+		return err
+	}
 
 	_, err = db.c.Exec("INSERT INTO messages VALUES (?,?,?,?)", newid+1, message.Date, message.Content, message.Comment)
 	if err != nil {

@@ -28,6 +28,7 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 
 	err = rt.db.SendMessage(message.ApiMessageToDB(), id, chatid)
 	if err != nil {
+		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -31,11 +32,18 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	err = rt.db.NewChat(id, chat.ApiChatToDB())
+	chat_id, err := rt.db.NewChat(id, chat.ApiChatToDB())
+	if err != nil {
+		log.Fatal(err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	chat.Id = chat_id
+
+	w.WriteHeader(http.StatusCreated)
+	err = json.NewEncoder(w).Encode(chat)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	http.Error(w, "Chat succesfully created", http.StatusCreated)
 }
