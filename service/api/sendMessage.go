@@ -24,11 +24,16 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = rt.db.SendMessage(message.ApiMessageToDB(), id, chatid)
+	chat, err := rt.db.SendMessage(message.ApiMessageToDB(), id, chatid)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	http.Error(w, "Message succesfully created", http.StatusCreated)
+	w.WriteHeader(http.StatusCreated)
+	err = json.NewEncoder(w).Encode(chat)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 }

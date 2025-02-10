@@ -38,7 +38,7 @@ import (
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	LoginManager(user User) (int, string, error)
+	LoginManager(user User) (User, string, error)
 
 	SetName(id string, newname string) error
 
@@ -58,7 +58,7 @@ type AppDatabase interface {
 
 	GetConversation(id string) (Chat, error)
 
-	SendMessage(message Message, userid string, chatid string) error
+	SendMessage(message Message, userid string, chatid string) (Chat, error)
 
 	ForwardMessage(userid string, messageid string, chatid string) error
 

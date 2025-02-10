@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 
@@ -25,7 +24,6 @@ func (rt *_router) getMyConversations(w http.ResponseWriter, r *http.Request, ps
 
 	chats, err := rt.db.GetMyConversations(user)
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

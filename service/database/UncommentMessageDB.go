@@ -1,14 +1,9 @@
 package database
 
-import (
-	"database/sql"
-	"errors"
-)
-
 func (db *appdbimpl) UncommentMessage(messageid string) error {
 
 	row := db.c.QueryRow("SELECT * FROM messages WHERE messageId = ?", messageid)
-	if err := row.Scan(nil, nil, nil, nil); errors.Is(err, sql.ErrNoRows) {
+	if err := row.Scan(nil, nil, nil, nil); err != nil {
 		return err
 	}
 

@@ -8,6 +8,73 @@ import (
 
 func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 
+	if len(chat.Members) == 2 {
+		rows1, err := db.c.Query("SELECT chatId FROM chats;")
+		if err != nil {
+			return -1, err
+		}
+		defer rows1.Close()
+		for rows1.Next() {
+			var chatid string
+			err = rows1.Scan(&chatid)
+			if err != nil {
+				return -1, err
+			} else {
+				rows2, err := db.c.Query("SELECT * FROM chat_user WHERE chatId = ?;", chatid)
+				if err != nil {
+					return -1, err
+				}
+				defer rows2.Close()
+				count := 0
+				for rows2.Next() {
+					count++
+				}
+				if count != 2 {
+					continue
+				}
+
+				rows2, err = db.c.Query("SELECT userId FROM chat_user WHERE chatId = ?;", chatid)
+				if err != nil {
+					return -1, err
+				}
+				check := 0
+				defer rows2.Close()
+				if rows2.Next() {
+					var id int
+					err := rows2.Scan(&id)
+					if err != nil {
+						return -1, err
+					}
+					if id == chat.Members[0].Id {
+						check = 1
+					} else if id == chat.Members[1].Id {
+						check = 2
+					}
+				}
+				if check != 0 && rows2.Next() {
+					var id int
+					err := rows2.Scan(&id)
+					if err != nil {
+						return -1, err
+					}
+					if check == 2 && id == chat.Members[0].Id {
+						chat, err := db.GetConversation(chatid)
+						if err != nil {
+							return -1, err
+						}
+						return chat.Id, errors.New("chat already existing")
+					} else if check == 1 && id == chat.Members[1].Id {
+						chat, err := db.GetConversation(chatid)
+						if err != nil {
+							return -1, err
+						}
+						return chat.Id, errors.New("chat already existing")
+					}
+				}
+			}
+		}
+	}
+
 	row := db.c.QueryRow("SELECT MAX(chatId) FROM chats")
 	var stringId string
 	var id int
@@ -30,7 +97,7 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 	for i := 0; i < len(chat.Members); i++ {
 		row := db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", chat.Members[i].Id)
 		err := row.Scan(nil, nil)
-		if errors.Is(err, sql.ErrNoRows) {
+		if err != nil {
 			return 0, err
 		}
 	}
@@ -53,6 +120,8 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 				err = row.Scan(nil, nil)
 				if errors.Is(err, sql.ErrNoRows) {
 					break
+				} else if err != nil {
+					return 0, err
 				}
 			}
 			if i == len(chat.Members)-1 {

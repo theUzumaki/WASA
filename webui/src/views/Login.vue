@@ -30,8 +30,7 @@ export default {
                 let response = await this.$axios.post('/session', {
                     name: this.username,
                 });
-                sessionStorage.userId= response.data.userId;
-                sessionStorage.username= this.username;
+                sessionStorage.user= JSON.stringify(response.data);
             } catch (e) {
                 this.error = e.toString();
                 return;

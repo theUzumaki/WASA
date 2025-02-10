@@ -18,26 +18,26 @@ export default {}
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 				<div class="position-sticky pt-3 sidebar-sticky">
-					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted text-uppercase">
 						<span>General</span>
 					</h6>
 					<ul class="nav flex-column">
 						<li class="nav-item">
-							<RouterLink to="/" class="nav-link">
+							<RouterLink to="/home" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#home"/></svg>
-								Home
+								home
 							</RouterLink>
 						</li>
 						<li class="nav-item">
 							<RouterLink to="/link1" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
-								Menu item 1
+								settings
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink to="/link2" class="nav-link">
+							<RouterLink to="/" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#key"/></svg>
-								Menu item 2
+								login
 							</RouterLink>
 						</li>
 					</ul>
@@ -61,7 +61,7 @@ export default {}
 
 .homescreen {
 	position: absolute;
-	top: 125px;
+	top: 75px;
 	left: 250px;
 	bottom: 0px;
 	right: 0px;

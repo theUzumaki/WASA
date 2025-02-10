@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -33,21 +32,16 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	var status string
-	id, status, err := rt.db.LoginManager(user.ApiUserToDB())
+	var newuser User
+	dbUser, status, err := rt.db.LoginManager(user.ApiUserToDB())
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	type token struct {
-		UserId int `json:"userId"`
-		Token  int `json:"token"`
+	newuser = User{
+		Id:   dbUser.Id,
+		Name: dbUser.Name,
 	}
-	var tok token
-
-	tok.UserId = id
-	tok.Token = id
 
 	if status == "user exist" {
 		w.WriteHeader(http.StatusOK)
@@ -55,7 +49,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusCreated)
 	}
 	w.Header().Set("content-type", "application/json")
-	err = json.NewEncoder(w).Encode(tok)
+	err = json.NewEncoder(w).Encode(newuser)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

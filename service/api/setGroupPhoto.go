@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -43,7 +42,6 @@ func (rt *_router) setGroupPhoto(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	fmt.Println(http.DetectContentType(image))
 	if http.DetectContentType(image) != "image/jpeg" {
 		http.Error(w, "Wrong file type", http.StatusBadRequest)
 		return

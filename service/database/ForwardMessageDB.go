@@ -1,10 +1,5 @@
 package database
 
-import (
-	"database/sql"
-	"errors"
-)
-
 func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid string) error {
 
 	row := db.c.QueryRow("SELECT MAX(messageId) FROM messages")
@@ -16,13 +11,13 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 
 	row = db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", userid)
 	err = row.Scan(nil, nil)
-	if errors.Is(err, sql.ErrNoRows) {
+	if err != nil {
 		return err
 	}
 
 	row = db.c.QueryRow("SELECT * FROM messages WHERE messageId = ?", messageid)
 	var message Message
-	row.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
+	err = row.Scan(&message.Id, &message.Date, &message.Content, &message.Comment)
 	if err != nil {
 		return err
 	}

@@ -41,21 +41,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Id"
-    get:
-      tags: ["users operations"]
-      operationId: getUsers
-      security:
-        - bearerAuth: []
-      summary: Retrieves all the users
-      description: |
-        Given a specified username sends back all the matching users
-      responses:
-        "200":
-          description: User found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListOfUser"
 
   /users/{id}/name:
     parameters:
@@ -102,36 +87,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
-
-  /users/{id}/groups:
-    parameters:
-      - $ref: "#/components/parameters/user_id"
-      - name: new_participant
-        in: query
-        required: false
-        schema:
-          $ref: "#/components/schemas/Id"
-        description: The user to add to the group
-    post:
-      tags: ["groups operations"]
-      operationId: addToGroup
-      security:
-        - bearerAuth: []
-      summary: adds user
-      description: |
-        Adds the user requested in the query to the group
-      requestBody:
-        description: User id to add
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Id"
-        required: true
-      responses:
-        "201":
-          $ref: "#/components/responses/twozeroone"
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
 
   /users/{id}/groups/{group_id}:
     parameters:

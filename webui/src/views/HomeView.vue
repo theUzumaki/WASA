@@ -7,7 +7,7 @@ export default {
 			chats: null,
 			users: null,
 			search: false,
-			username: sessionStorage.username,
+			username: sessionStorage.user.username,
 		}
 	},
 	methods: {
@@ -26,18 +26,18 @@ export default {
 			this.search = false;
 			this.errormsg = null;
 			try {
-				let response = await this.$axios.post("/users/"+sessionStorage.userId+"/conversations", {
+				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
 					name: "chat",
 					members: [{
-						name: sessionStorage.username,
-						id: parseInt(sessionStorage.userId)
+						name: JSON.parse(sessionStorage.user).name,
+						id: parseInt(JSON.parse(sessionStorage.user).id)
 					}, {
 						name: username,
 						id: parseInt(userId)
 					}]
 				}, {
 					headers: {
-						"Authorization": sessionStorage.userId
+						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
 				sessionStorage.chat= JSON.stringify(response.data);
@@ -49,10 +49,10 @@ export default {
 		async getUsers(name = ""){
 			this.errormsg = null;
 			try {
-				if (name.length < 3 || name.length > 16) throw "It has to be between 3 and 16 characters long"
-				let response = await this.$axios.get("/users/"+sessionStorage.userId+"/search/"+name, {
+				if (name.length < 1) throw "It has to have at least 1 character"
+				let response = await this.$axios.get("/users/"+JSON.parse(sessionStorage.user).id+"/search/"+name, {
 					headers: {
-						"Authorization": sessionStorage.userId
+						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
 				this.users = response.data;
@@ -63,9 +63,9 @@ export default {
 		},
 		async getMyConversations(){
 			try {
-				let response = await this.$axios.get("/users/"+sessionStorage.userId+"/conversations", {
+				let response = await this.$axios.get("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
 					headers: {
-						"Authorization": sessionStorage.userId
+						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
 				this.chats = response.data;
@@ -89,6 +89,20 @@ export default {
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Home page</h1>
+			<div class= "homescreen">
+				<div v-for="chat in chats" style="position: absolute; top:50px;">
+					<button type="button" class="btn" @click="openChat(chat)">
+						{{ chat.members[1].name }}
+					</button>
+				</div>
+				<div v-if="search" style="position: absolute; top:50px; left:77%">
+					<div v-for="user in users">
+						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name)">
+							{{ user.name }}
+						</button> <br>
+					</div>
+				</div>
+			</div>
 			<div class="btn-toolbar mb-2 mb-md-0 right" >
 				<div class="btn-group me-2">
 					<button type="button" class="btn" @click="getMyConversations">
@@ -96,26 +110,7 @@ export default {
 					</button>
 				</div>
 				<div class="btn-group me-2">
-					<button type="button" class="btn" @click="newChat">
-						New chat
-					</button>
-				</div>
-				<div class="btn-group me-2">
 					<input type="text" class="form-control" placeholder="Search user" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
-				</div>
-			</div>
-			<div class= "homescreen">
-				<div v-for="chat in chats">
-					<button type="button" class="btn" @click="openChat(chat)">
-						{{ chat.members[1].name }}
-					</button>
-				</div>
-				<div v-if="search" style="position: absolute; top:0px; left:77%">
-					<div v-for="user in users">
-						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name)">
-							{{ user.name }}
-						</button> <br>
-					</div>
 				</div>
 			</div>
 		</div>
