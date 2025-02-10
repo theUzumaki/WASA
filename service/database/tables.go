@@ -3,6 +3,7 @@ package database
 var users = `CREATE TABLE IF NOT EXISTS users (
 	userId INTEGER NOT NULL,
 	userName TEXT NOT NULL,
+	picture STRING,
 	PRIMARY KEY (userId)
 );`
 

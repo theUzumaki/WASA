@@ -1,10 +1,8 @@
 package api
 
 import (
-	"io"
-	"log"
+	"encoding/json"
 	"net/http"
-	"os"
 	"wasatext/service/api/reqcontext"
 
 	"github.com/julienschmidt/httprouter"
@@ -23,36 +21,27 @@ func (rt *_router) setMyPhoto(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err := r.ParseMultipartForm(5 * (10 ^ 6))
-	if err != nil {
-		log.Fatal(err.Error())
-		http.Error(w, "Image size limit exceeded", http.StatusBadRequest)
-		return
-	}
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
 
-	rawfile, _, err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	image, err := io.ReadAll(rawfile)
+	/*
+		var valid = regexp.MustCompile(`^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$`).MatchString(user.Picture)
+		if !valid {
+			http.Error(w, "Picture not valid", http.StatusExpectationFailed)
+			return
+		}
+	*/
+
+	err = rt.db.SetMyPhoto(id, user.Picture)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	if http.DetectContentType(image) != "image/jpeg" {
-		http.Error(w, "Wrong file type", http.StatusBadRequest)
-		return
-	}
-
-	defer rawfile.Close()
-	err = os.WriteFile("profilepics/"+id, image, 0700)
-	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	http.Error(w, "Ok", http.StatusOK)
+	http.Error(w, "Picture succesfully changed", http.StatusOK)
 }

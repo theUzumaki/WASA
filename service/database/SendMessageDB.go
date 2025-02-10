@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-func (db *appdbimpl) SendMessage(message Message, userid string, chatid string) (Chat, error) {
+func (db *appdbimpl) SendMessage(message Message) (Chat, error) {
 	var chat Chat
 
 	var stringId string
@@ -20,23 +20,21 @@ func (db *appdbimpl) SendMessage(message Message, userid string, chatid string) 
 		return chat, err
 	}
 	message.Id++
-
 	_, err = db.c.Exec("INSERT INTO messages VALUES (?,?,?,?)", message.Id, message.Date, message.Content, message.Comment)
 	if err != nil {
 		return chat, err
 	}
 
-	_, err = db.c.Exec("INSERT INTO chat_message VALUES (?,?)", chatid, message.Id)
+	_, err = db.c.Exec("INSERT INTO chat_message VALUES (?,?)", message.ChatId, message.Id)
+	if err != nil {
+		return chat, err
+	}
+	_, err = db.c.Exec("INSERT INTO message_user VALUES (?,?)", message.Id, message.Sender.Id)
 	if err != nil {
 		return chat, err
 	}
 
-	_, err = db.c.Exec("INSERT INTO message_user VALUES (?,?)", message.Id, userid)
-	if err != nil {
-		return chat, err
-	}
-
-	chat, err = db.GetConversation(chatid)
+	chat, err = db.GetConversation(strconv.Itoa(message.ChatId))
 	if err != nil {
 		return chat, err
 	}

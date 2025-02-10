@@ -1,8 +1,14 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"io"
+	"log"
 	"net/http"
+	"strconv"
+	"strings"
+	"time"
 	"wasatext/service/api/reqcontext"
 
 	"github.com/julienschmidt/httprouter"
@@ -18,13 +24,48 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&message)
+	err := r.ParseMultipartForm(4 << 20)
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	chat, err := rt.db.SendMessage(message.ApiMessageToDB(), id, chatid)
+	// Retrieve the form values
+	message.ChatId, err = strconv.Atoi(r.FormValue("chat_id"))
+	if err != nil {
+		http.Error(w, "Invalid chat id", http.StatusBadRequest)
+		return
+	}
+
+	sender_id, err := strconv.Atoi(r.FormValue("sender_id"))
+	if err != nil {
+		http.Error(w, "Invalid sender", http.StatusBadRequest)
+		return
+	}
+	message.Sender = User{
+		Id:      sender_id,
+		Name:    r.FormValue("sender_name"),
+		Picture: r.FormValue("sender_pic"),
+	}
+	dateStr := r.FormValue("date")
+	message.Date, err = time.Parse(time.RFC3339, dateStr)
+	if err != nil {
+		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		return
+	}
+	message.Content = r.FormValue("content")
+
+	if http.DetectContentType([]byte(message.Content)) == "image/jpeg" {
+		log.Println("HERE")
+		imageData, err := io.ReadAll(strings.NewReader(message.Content))
+		if err != nil {
+			http.Error(w, "Unable to read image", http.StatusBadRequest)
+			return
+		}
+		message.Content = base64.StdEncoding.EncodeToString(imageData)
+	}
+
+	chat, err := rt.db.SendMessage(message.ApiMessageToDB())
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

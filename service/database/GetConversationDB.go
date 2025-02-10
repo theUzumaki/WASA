@@ -21,7 +21,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 		return chat, err
 	}
 	rowsMessages, err := db.c.Query(
-		`SELECT	chat_message.messageId, messages.date, messages.content, messages.comment, users.userId, users.userName 
+		`SELECT	chat_message.messageId, messages.date, messages.content, messages.comment, users.userId, users.userName, chats.chatId 
 		FROM chats
 		JOIN chat_message ON chat_message.chatId = chats.chatId
 		JOIN messages ON chat_message.messageId = messages.messageId
@@ -47,7 +47,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 	for rowsMessages.Next() {
 		var message Message
 
-		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Comment, &message.Sender.Id, &message.Sender.Name)
+		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Comment, &message.Sender.Id, &message.Sender.Name, &message.ChatId)
 		if err != nil {
 			return chat, err
 		}

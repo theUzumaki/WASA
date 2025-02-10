@@ -42,6 +42,8 @@ type AppDatabase interface {
 
 	SetName(id string, newname string) error
 
+	SetMyPhoto(id string, newpicture string) error
+
 	NewChat(id string, chat Chat) (int, error)
 
 	LeaveGroup(idgroup string, iduser string) error
@@ -58,7 +60,7 @@ type AppDatabase interface {
 
 	GetConversation(id string) (Chat, error)
 
-	SendMessage(message Message, userid string, chatid string) (Chat, error)
+	SendMessage(message Message) (Chat, error)
 
 	ForwardMessage(userid string, messageid string, chatid string) error
 

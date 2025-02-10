@@ -96,7 +96,9 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 
 	for i := 0; i < len(chat.Members); i++ {
 		row := db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", chat.Members[i].Id)
-		err := row.Scan(nil, nil)
+		var user User
+
+		err := row.Scan(&user.Id, &user.Name)
 		if err != nil {
 			return 0, err
 		}
@@ -124,6 +126,7 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 					return 0, err
 				}
 			}
+
 			if i == len(chat.Members)-1 {
 				idInt, err := strconv.Atoi(id)
 				if err != nil {

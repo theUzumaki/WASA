@@ -76,11 +76,34 @@ export default {
 		async openChat(chat){
 			sessionStorage.chat= JSON.stringify(chat)
 			this.$router.push("/chat");
-		}
+		},
+		displayMemberName(chat) {
+		  if (JSON.parse(sessionStorage.user).name === chat.members[1].name) {
+			return chat.members[0].name;
+		  } else {
+			return chat.members[1].name;
+		  }
+		},
+		startChatLoading() {
+			this.intervalId = setInterval(() => {
+        		this.getMyConversations();
+    		}, 1000);
+    	},
+    	stopChatLoading() {
+    		if (this.intervalId) {
+        		clearInterval(this.intervalId);
+    		}
+    	},
 	},
 	mounted() {
-		this.refresh()
-	}
+	    this.startChatLoading();
+	},
+	beforeRouteLeave(){
+		this.stopChatLoading();
+	},
+	beforeDestroy() {
+    	this.stopChatLoading();
+	},
 }
 </script>
 
@@ -92,7 +115,7 @@ export default {
 			<div class= "homescreen">
 				<div v-for="chat in chats" style="position: absolute; top:50px;">
 					<button type="button" class="btn" @click="openChat(chat)">
-						{{ chat.members[1].name }}
+						{{ displayMemberName(chat) }}
 					</button>
 				</div>
 				<div v-if="search" style="position: absolute; top:50px; left:77%">
@@ -106,11 +129,11 @@ export default {
 			<div class="btn-toolbar mb-2 mb-md-0 right" >
 				<div class="btn-group me-2">
 					<button type="button" class="btn" @click="getMyConversations">
-						Load chats
+						New group
 					</button>
 				</div>
 				<div class="btn-group me-2">
-					<input type="text" class="form-control" placeholder="Search user" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
+					<input type="text" class="form-control" placeholder="Find user to chat" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
 				</div>
 			</div>
 		</div>

@@ -2,7 +2,14 @@
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <script>
-export default {}
+export default {
+	data: function() {
+		return {
+			picture: JSON.parse(sessionStorage.user).picture,
+			username: JSON.parse(sessionStorage.user).name
+		}
+	},
+}
 </script>
 
 <template>
@@ -18,6 +25,10 @@ export default {}
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 				<div class="position-sticky pt-3 sidebar-sticky">
+					<div class="d-flex align-items-center px-3 mb-3">
+						<img :src="this.picture" alt="User Profile" class="rounded-circle" width="40" height="40">
+						<nbsp>  </nbsp> {{ this.username }}
+					</div>
 					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted text-uppercase">
 						<span>General</span>
 					</h6>
@@ -29,7 +40,7 @@ export default {}
 							</RouterLink>
 						</li>
 						<li class="nav-item">
-							<RouterLink to="/link1" class="nav-link">
+							<RouterLink to="/settings" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
 								settings
 							</RouterLink>
