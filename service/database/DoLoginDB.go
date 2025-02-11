@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"strconv"
 )
 
@@ -12,12 +13,14 @@ func (db *appdbimpl) LoginManager(user User) (User, string, error) {
 
 	var newuser User
 	var id int
-	err := row.Scan(&newuser.Id, &newuser.Name)
+	err := row.Scan(&newuser.Id, &newuser.Name, &newuser.Picture)
 	if !errors.Is(err, sql.ErrNoRows) {
 		return newuser, "user exist", nil
 	} else if errors.Is(err, sql.ErrNoRows) {
 		newuser.Name = user.Name
+		newuser.Picture = user.Picture
 	} else if err != nil {
+		log.Println(err.Error())
 		return newuser, "", err
 	}
 
@@ -31,12 +34,13 @@ func (db *appdbimpl) LoginManager(user User) (User, string, error) {
 	} else {
 		id, err = strconv.Atoi(stringId)
 		if err != nil {
+			log.Println(err.Error())
 			return newuser, "", err
 		}
 	}
 	newuser.Id = id + 1
 
-	_, err = db.c.Exec("INSERT INTO users (userId, userName) VALUES (?, ?);", newuser.Id, newuser.Name)
+	_, err = db.c.Exec("INSERT INTO users VALUES (?, ?, ?);", newuser.Id, newuser.Name, newuser.Picture)
 	if err != nil {
 		return newuser, "", err
 	}

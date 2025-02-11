@@ -1,7 +1,9 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
@@ -26,9 +28,19 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	imagePath := "webui/blue-profile-icon-free-png.jpg"
+	imageData, err := ioutil.ReadFile(imagePath)
+	if err != nil {
+		http.Error(w, "Unable to read image", http.StatusInternalServerError)
+		return
+	}
+
+	user.Picture = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(imageData)
+
 	user = User{
-		Id:   -1,
-		Name: userName,
+		Id:      -1,
+		Name:    userName,
+		Picture: user.Picture,
 	}
 
 	var status string
@@ -39,8 +51,9 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 	newuser = User{
-		Id:   dbUser.Id,
-		Name: dbUser.Name,
+		Id:      dbUser.Id,
+		Name:    dbUser.Name,
+		Picture: dbUser.Picture,
 	}
 
 	if status == "user exist" {

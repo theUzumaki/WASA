@@ -98,7 +98,7 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 		row := db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", chat.Members[i].Id)
 		var user User
 
-		err := row.Scan(&user.Id, &user.Name)
+		err := row.Scan(&user.Id, &user.Name, &user.Picture)
 		if err != nil {
 			return 0, err
 		}

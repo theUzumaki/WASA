@@ -5,9 +5,36 @@ import { RouterLink, RouterView } from 'vue-router'
 export default {
 	data: function() {
 		return {
-			picture: JSON.parse(sessionStorage.user).picture,
-			username: JSON.parse(sessionStorage.user).name
+			picture: null,
+			username: null,
+			logged: false,
 		}
+	},
+	methods: {
+		loadUser(){
+			this.logged= true;
+			this.picture= JSON.parse(sessionStorage.user).picture
+			this.username= JSON.parse(sessionStorage.user).name
+		},
+		startUserLoading() {
+			this.intervalId = setInterval(() => {
+        		this.loadUser();
+    		}, 1000);
+    	},
+    	stopUserLoading() {
+    		if (this.intervalId) {
+        		clearInterval(this.intervalId);
+    		}
+    	},
+	},
+	mounted() {
+	    this.startUserLoading();
+	},
+	beforeRouteLeave(){
+		this.stopUserLoading();
+	},
+	beforeDestroy() {
+    	this.stopUserLoading();
 	},
 }
 </script>
@@ -25,9 +52,9 @@ export default {
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 				<div class="position-sticky pt-3 sidebar-sticky">
-					<div class="d-flex align-items-center px-3 mb-3">
+					<div v-if=this.logged class="d-flex align-items-center px-3 mb-3">
 						<img :src="this.picture" alt="User Profile" class="rounded-circle" width="40" height="40">
-						<nbsp>  </nbsp> {{ this.username }}
+						{{ this.username }}
 					</div>
 					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted text-uppercase">
 						<span>General</span>

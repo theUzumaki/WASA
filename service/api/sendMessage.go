@@ -1,13 +1,9 @@
 package api
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"io"
-	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 	"wasatext/service/api/reqcontext"
 
@@ -54,16 +50,6 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	message.Content = r.FormValue("content")
-
-	if http.DetectContentType([]byte(message.Content)) == "image/jpeg" {
-		log.Println("HERE")
-		imageData, err := io.ReadAll(strings.NewReader(message.Content))
-		if err != nil {
-			http.Error(w, "Unable to read image", http.StatusBadRequest)
-			return
-		}
-		message.Content = base64.StdEncoding.EncodeToString(imageData)
-	}
 
 	chat, err := rt.db.SendMessage(message.ApiMessageToDB())
 	if err != nil {

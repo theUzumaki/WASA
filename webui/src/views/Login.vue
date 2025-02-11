@@ -1,4 +1,4 @@
-import ErrorMsg from '@/components/ErrorMsg.vue';
+
 
 <template>
     <ErrorMsg v-if="error" :msg="error"></ErrorMsg>
@@ -19,18 +19,19 @@ export default {
     data() {
         return {
             username: '',
-            error: null
+            error: null,
+            baseProfilePic: null,
         };
     },
     methods: {
         async handleSubmit() {
-            
             try {
                 if (this.username.length < 3 || this.username.length > 16) throw "It has to be between 3 and 16 characters long"
                 let response = await this.$axios.post('/session', {
                     name: this.username,
                 });
                 sessionStorage.user= JSON.stringify(response.data);
+    
             } catch (e) {
                 this.error = e.toString();
                 return;

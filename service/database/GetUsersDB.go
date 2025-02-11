@@ -13,7 +13,7 @@ func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
 	defer rowsUsers.Close()
 	for rowsUsers.Next() {
 		var user User
-		err = rowsUsers.Scan(&user.Id, &user.Name)
+		err = rowsUsers.Scan(&user.Id, &user.Name, &user.Picture)
 		if err != nil {
 			return nil, err
 		}

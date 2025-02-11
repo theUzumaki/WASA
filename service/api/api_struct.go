@@ -21,8 +21,9 @@ type User struct {
 
 func (user User) ApiUserToDB() database.User {
 	newUser := database.User{
-		Id:   user.Id,
-		Name: user.Name,
+		Id:      user.Id,
+		Name:    user.Name,
+		Picture: user.Picture,
 	}
 	return newUser
 }

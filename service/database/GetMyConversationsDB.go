@@ -19,7 +19,7 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 		}
 
 		rowsMembers, err := db.c.Query(
-			`SELECT chat_user.userId, users.userName
+			`SELECT chat_user.userId, users.userName, users.picture
 			FROM chats
 			JOIN chat_user ON chat_user.chatId = chats.chatId
 			JOIN users ON chat_user.userId = users.userId
@@ -41,7 +41,7 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 		for rowsMembers.Next() {
 			var member User
 
-			err := rowsMembers.Scan(&member.Id, &member.Name)
+			err := rowsMembers.Scan(&member.Id, &member.Name, &member.Picture)
 			if err != nil {
 				return nil, err
 			}

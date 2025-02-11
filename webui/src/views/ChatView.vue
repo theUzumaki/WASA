@@ -92,7 +92,7 @@ export default {
 			<div class="list-group-item list-group-item-action" style="left: 0px; margin-block-end: 70px;">
 				<div v-for="message in this.messages">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
-						{{ message.sender.name }}:<br>
+						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
 						<div v-if="isBase64Image(message.content)">
 							<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/>
 						</div>

@@ -29,14 +29,6 @@ func (rt *_router) setMyPhoto(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	/*
-		var valid = regexp.MustCompile(`^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$`).MatchString(user.Picture)
-		if !valid {
-			http.Error(w, "Picture not valid", http.StatusExpectationFailed)
-			return
-		}
-	*/
-
 	err = rt.db.SetMyPhoto(id, user.Picture)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

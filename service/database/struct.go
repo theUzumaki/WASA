@@ -5,8 +5,9 @@ import (
 )
 
 type User struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
 }
 
 type Message struct {
@@ -19,8 +20,9 @@ type Message struct {
 }
 
 type Group struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
 }
 
 type Chat struct {

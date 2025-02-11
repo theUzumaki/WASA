@@ -7,7 +7,6 @@ export default {
 			chats: null,
 			users: null,
 			search: false,
-			username: sessionStorage.user.username,
 		}
 	},
 	methods: {
@@ -22,7 +21,7 @@ export default {
 			}
 			this.loading = false;
 		},
-		async newChat(userId, username){
+		async newChat(userId, username, userpicture){
 			this.search = false;
 			this.errormsg = null;
 			try {
@@ -30,10 +29,12 @@ export default {
 					name: "chat",
 					members: [{
 						name: JSON.parse(sessionStorage.user).name,
-						id: parseInt(JSON.parse(sessionStorage.user).id)
+						id: parseInt(JSON.parse(sessionStorage.user).id),
+						picture: JSON.parse(sessionStorage.user).picture
 					}, {
 						name: username,
-						id: parseInt(userId)
+						id: parseInt(userId),
+						picture: userpicture
 					}]
 				}, {
 					headers: {
@@ -120,8 +121,8 @@ export default {
 				</div>
 				<div v-if="search" style="position: absolute; top:50px; left:77%">
 					<div v-for="user in users">
-						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name)">
-							{{ user.name }}
+						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name, user.picture)">
+							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
 					</div>
 				</div>
