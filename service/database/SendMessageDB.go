@@ -1,7 +1,6 @@
 package database
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -31,7 +30,6 @@ func (db *appdbimpl) SendMessage(message Message) (Chat, error) {
 		return chat, err
 	}
 
-	log.Println("SENDER ID: ", message.Sender.Id)
 	_, err = db.c.Exec("INSERT INTO message_user VALUES (?,?)", message.Id, message.Sender.Id)
 	if err != nil {
 		return chat, err

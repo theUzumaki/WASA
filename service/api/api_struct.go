@@ -114,6 +114,7 @@ func (chat Chat) ApiChatToDB() database.Chat {
 		Name:     chat.Name,
 		Members:  s_newMembers,
 		Messages: s_newMessages,
+		Picture:  chat.Picture,
 	}
 	return newChat
 }

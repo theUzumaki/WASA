@@ -1,8 +1,10 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 </script>
+
 <script>
 export default {
+
 	data: function() {
 		return {
 			picture: null,
@@ -33,7 +35,7 @@ export default {
 	beforeRouteLeave(){
 		this.stopUserLoading();
 	},
-	beforeDestroy() {
+	beforeUnmount() {
     	this.stopUserLoading();
 	},
 }

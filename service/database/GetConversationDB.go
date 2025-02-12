@@ -7,7 +7,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 			FROM chats
 			WHERE chatId = ?`, chatId)
 
-	if err := row.Scan(&chat.Id, &chat.Name); err != nil {
+	if err := row.Scan(&chat.Id, &chat.Name, &chat.Picture); err != nil {
 		return chat, err
 	}
 
@@ -32,7 +32,6 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 		return chat, err
 	}
 
-	defer rowsMembers.Close()
 	for rowsMembers.Next() {
 		var member User
 
@@ -43,7 +42,6 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 		chat.Members = append(chat.Members, member)
 	}
 
-	defer rowsMessages.Close()
 	for rowsMessages.Next() {
 		var message Message
 
@@ -52,6 +50,14 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 			return chat, err
 		}
 		chat.Messages = append(chat.Messages, message)
+	}
+	err = rowsMembers.Close()
+	if err != nil {
+		return chat, err
+	}
+	err = rowsMessages.Close()
+	if err != nil {
+		return chat, err
 	}
 
 	return chat, err

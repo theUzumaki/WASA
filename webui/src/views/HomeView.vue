@@ -1,4 +1,5 @@
 <script>
+
 export default {
 	data: function() {
 		return {
@@ -7,6 +8,10 @@ export default {
 			chats: null,
 			users: null,
 			search: false,
+			showGroupForm: false,
+			selectedUsers: [],
+			groupName: null,
+			groupPicture: null,
 		}
 	},
 	methods: {
@@ -21,31 +26,44 @@ export default {
 			}
 			this.loading = false;
 		},
-		async newChat(userId, username, userpicture){
+		async addUserToGroup(user){
+			this.selectedUsers.push(user)
+		},
+		async newChat(userlist, groupname, grouppic){
 			this.search = false;
 			this.errormsg = null;
+			let chatpic= null
+			let chatname= "chat"
+			console.log("BEFORE: ", userlist)
+			let newmembers= [...userlist]
 			try {
+				newmembers.push({
+					name: JSON.parse(sessionStorage.user).name,
+					id: parseInt(JSON.parse(sessionStorage.user).id),
+					picture: JSON.parse(sessionStorage.user).picture
+				});
+				
+				if (this.showGroupForm) {
+					chatpic= grouppic
+					chatname= groupname
+				}
+				console.log("NEW CHAT: ", chatname, " - ", newmembers, " - ", grouppic)
+
 				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
-					name: "chat",
-					members: [{
-						name: JSON.parse(sessionStorage.user).name,
-						id: parseInt(JSON.parse(sessionStorage.user).id),
-						picture: JSON.parse(sessionStorage.user).picture
-					}, {
-						name: username,
-						id: parseInt(userId),
-						picture: userpicture
-					}]
+					name: chatname,
+					members: newmembers,
+					picture: chatpic
 				}, {
 					headers: {
 						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
 				sessionStorage.chat= JSON.stringify(response.data);
+				this.$router.push("/chat");
 			} catch (e) {
+				console.log(e.toString())
 				this.errormsg = e.toString();
 			}
-			this.$router.push("/chat");
 		},
 		async getUsers(name = ""){
 			this.errormsg = null;
@@ -78,12 +96,38 @@ export default {
 			sessionStorage.chat= JSON.stringify(chat)
 			this.$router.push("/chat");
 		},
+		onFileChange(event) {
+			const file = event.target.files[0];
+			const reader = new FileReader();
+
+			reader.onload = (e) => {
+				const base64String = e.target.result;
+				this.groupPicture= base64String;
+			};
+
+			reader.readAsDataURL(file);
+		},
 		displayMemberName(chat) {
-		  if (JSON.parse(sessionStorage.user).name === chat.members[1].name) {
-			return chat.members[0].name;
-		  } else {
-			return chat.members[1].name;
-		  }
+			if (chat.name == "chat") {
+				if (JSON.parse(sessionStorage.user).name === chat.members[1].name) {
+				  return chat.members[0].name;
+				} else {
+				  return chat.members[1].name;
+				}
+			} else {
+				return chat.name
+			}
+		},
+		displayChatPic(chat){
+			if (chat.name == "chat") {
+				if (JSON.parse(sessionStorage.user).name === chat.members[1].name) {
+				  return chat.members[0].picture;
+				} else {
+				  return chat.members[1].picture;
+				}
+			} else {
+				return chat.picture
+			}
 		},
 		startChatLoading() {
 			this.intervalId = setInterval(() => {
@@ -102,7 +146,7 @@ export default {
 	beforeRouteLeave(){
 		this.stopChatLoading();
 	},
-	beforeDestroy() {
+	beforeUnmount() {
     	this.stopChatLoading();
 	},
 }
@@ -114,27 +158,48 @@ export default {
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Home page</h1>
 			<div class= "homescreen">
-				<div v-for="chat in chats" style="position: absolute; top:50px;">
+				<div v-if= "showGroupForm == false" v-for="chat in chats" style="position: relative; top:50px;">
 					<button type="button" class="btn" @click="openChat(chat)">
-						{{ displayMemberName(chat) }}
-					</button>
+						<img :src=displayChatPic(chat) alt="User Profile" class="rounded-circle" width="40" height="40"> {{ displayMemberName(chat) }}
+					</button> <br>
 				</div>
 				<div v-if="search" style="position: absolute; top:50px; left:77%">
-					<div v-for="user in users">
-						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="newChat(user.id, user.name, user.picture)">
+					<div v-for="user in users" :key="user.id">
+						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="showGroupForm ? addUserToGroup(user) : newChat([user], null, user.picture)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
 					</div>
 				</div>
+				<div v-if="showGroupForm" class="group-form" style="position: relative; top: 75px; width: 30%;">
+					<div class="form-group">
+						<label for="groupName">Group Name</label>
+						<input type="text" class="form-control" id="groupName" v-model="this.groupName">
+						<br>
+					</div>
+					<div class="form-group">
+						<label for="groupPicture">Group Picture</label>
+						<input type="file" class="form-control" id="groupPicture" @change="onFileChange">
+						<br>
+					</div>
+					<div class="form-group">
+						<label for="groupMembers">Search users in the bar on the corner</label>
+						<select multiple class="form-control" id="groupMembers" v-model="this.selectedUsers">
+							<option v-for="user in this.selectedUsers" :key="user.id" :value="user">{{ user.name }}</option>
+						</select>
+						<br>
+					</div>
+					<button type="button" class="btn btn-primary" @click="newChat(this.selectedUsers, this.groupName, this.groupPicture)">Create Group</button>
+					<button type="button" class="btn btn-secondary" @click="showGroupForm = false">Cancel</button>
+				</div>
 			</div>
 			<div class="btn-toolbar mb-2 mb-md-0 right" >
+				<button type="button" class="btn" @click="showGroupForm = true">
+					New group
+				</button>
+				
 				<div class="btn-group me-2">
-					<button type="button" class="btn" @click="getMyConversations">
-						New group
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<input type="text" class="form-control" placeholder="Find user to chat" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
+					<input v-if="showGroupForm" type="text" class="form-control" placeholder="Find user to chat" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
+					<input v-else type="text" class="form-control" placeholder="User to add to group" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
 				</div>
 			</div>
 		</div>

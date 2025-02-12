@@ -30,4 +30,5 @@ type Chat struct {
 	Name     string    `json:"name"`
 	Members  []User    `json:"members"`
 	Messages []Message `json:"messages"`
+	Picture  string    `json:"picture"`
 }

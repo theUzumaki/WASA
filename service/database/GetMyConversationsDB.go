@@ -2,7 +2,7 @@ package database
 
 func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 
-	rowsChat, err := db.c.Query(`SELECT chats.chatId, chats.chatName  
+	rowsChat, err := db.c.Query(`SELECT chats.chatId, chats.chatName, chats.picture  
 			FROM chats
 			JOIN chat_user ON chat_user.chatId = chats.chatId
 			WHERE userId = ?`, userId)
@@ -11,10 +11,9 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 	}
 
 	var chats []Chat
-	defer rowsChat.Close()
 	for rowsChat.Next() {
 		var chat Chat
-		if rowsChat.Scan(&chat.Id, &chat.Name) != nil {
+		if rowsChat.Scan(&chat.Id, &chat.Name, &chat.Picture) != nil {
 			return nil, err
 		}
 
@@ -37,7 +36,6 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 			return nil, err
 		}
 
-		defer rowsMembers.Close()
 		for rowsMembers.Next() {
 			var member User
 
@@ -48,7 +46,6 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 			chat.Members = append(chat.Members, member)
 		}
 
-		defer rowsMessages.Close()
 		for rowsMessages.Next() {
 			var message Message
 
@@ -59,7 +56,20 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 
 			chat.Messages = append(chat.Messages, message)
 		}
+		err = rowsMembers.Close()
+		if err != nil {
+			return chats, err
+		}
+
+		err = rowsMessages.Close()
+		if err != nil {
+			return chats, err
+		}
 		chats = append(chats, chat)
+	}
+	err = rowsChat.Close()
+	if err != nil {
+		return chats, err
 	}
 
 	return chats, err

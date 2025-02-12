@@ -10,7 +10,6 @@ func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
 	}
 
 	var users []User
-	defer rowsUsers.Close()
 	for rowsUsers.Next() {
 		var user User
 		err = rowsUsers.Scan(&user.Id, &user.Name, &user.Picture)
@@ -18,6 +17,11 @@ func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
 			return nil, err
 		}
 		users = append(users, user)
+	}
+
+	err = rowsUsers.Close()
+	if err != nil {
+		return users, err
 	}
 
 	return users, err

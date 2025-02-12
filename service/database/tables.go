@@ -18,6 +18,7 @@ var messages = `CREATE TABLE IF NOT EXISTS messages (
 var chats = `CREATE TABLE IF NOT EXISTS chats (
 	chatId INTEGER NOT NULL,
 	chatName TEXT NOT NULL,
+	picture STRING,
 	PRIMARY KEY (chatId)
 );`
 
