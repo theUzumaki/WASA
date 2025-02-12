@@ -8,7 +8,7 @@ import (
 func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 
 	// Checks if already exist a private chat with the same users
-	if len(chat.Members) == 2 {
+	if chat.Name == "chat" {
 		rows1, err := db.c.Query("SELECT chatId FROM chats;")
 		if err != nil {
 			return -1, err

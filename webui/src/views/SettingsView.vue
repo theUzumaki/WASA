@@ -3,9 +3,11 @@ export default {
     data() {
         return {
             username: '',
+            groupname: '',
             profilePicture: null,
             profilePictureUrl: '',
             errormsg: null,
+            isGroup: false,
         };
     },
     methods: {
@@ -23,37 +25,88 @@ export default {
         },
         async saveSettings() {
             try {
-				let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/name", {
-                    id: JSON.parse(sessionStorage.user).id,
-                    name: this.username,
-                    picture: this.profilePicture
-				}, {
-					headers: {
-						"Authorization": JSON.parse(sessionStorage.user).id
-					}
-				});
-                response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
-                    id: JSON.parse(sessionStorage.user).id,
-                    name: this.username,
-                    picture: this.profilePicture
-				}, {
-					headers: {
-						"Authorization": JSON.parse(sessionStorage.user).id
-					}
-				});
-                sessionStorage.user = JSON.stringify({
-                    id: JSON.parse(sessionStorage.user).id,
-                    name: this.username,
-                    picture: this.profilePicture
-                })
+                if (this.isGroup){
+                    let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id+"/name", {
+                        name: this.groupname,
+                    }, {
+                        headers: {
+                            "Authorization": JSON.parse(sessionStorage.user).id
+                        }
+                    });
+                    response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id+"/picture", {
+                        picture: this.profilePicture
+                    }, {
+                        headers: {
+                            "Authorization": JSON.parse(sessionStorage.user).id
+                        }
+                    });
+                    sessionStorage.chat = JSON.stringify({
+                        id: JSON.parse(sessionStorage.chat).id,
+                        name: this.groupname,
+                        members: JSON.parse(sessionStorage.chat).members,
+                        messages: JSON.parse(sessionStorage.chat).messages,
+                        picture: this.profilePicture
+                    })
+                    this.$router.push("/chat");
+                } else {
+                    let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/name", {
+                        id: JSON.parse(sessionStorage.user).id,
+                        name: this.username,
+                        picture: this.profilePicture
+                    }, {
+                        headers: {
+                            "Authorization": JSON.parse(sessionStorage.user).id
+                        }
+                    });
+                    response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
+                        id: JSON.parse(sessionStorage.user).id,
+                        name: this.username,
+                        picture: this.profilePicture
+                    }, {
+                        headers: {
+                            "Authorization": JSON.parse(sessionStorage.user).id
+                        }
+                    });
+                    sessionStorage.user = JSON.stringify({
+                        id: JSON.parse(sessionStorage.user).id,
+                        name: this.username,
+                        picture: this.profilePicture
+                    })
+                }
 			} catch (e) {
                 this.errormsg = e.toString();
 			}
             this.username = '';
+            this.groupname = '';
             this.profilePicture = null;
             this.profilePictureUrl = '';
+        },
+        checkGroup(){
+			const chat_name = JSON.parse(sessionStorage.chat).name;
+			if (chat_name == "chat"){
+				this.isGroup= false
+			} else if (chat_name == null){
+                this.isGroup= false
+            } else {
+				this.isGroup= true
+			}
+		},
+        setGroupFalse(){
+            this.isGroup= false;
         }
-    }
+    },
+    beforeRouteEnter(to, from, next) {
+        console.log("BEFORE ROUTE")
+        if (from.path === '/chat') {
+            next(vm => {
+                vm.checkGroup();
+            });
+        } else {
+            next(vm => {
+                vm.setGroupFalse();
+            })
+        }
+    },
 };
 </script>
 
@@ -63,12 +116,24 @@ export default {
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
         <form @submit.prevent="saveSettings">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required />
+                <div v-if="isGroup">
+                    <label for="groupname">Group name:</label>
+                    <input type="text" id="groupname" v-model="groupname" required />
+                </div>
+                <div v-else>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" v-model="username" required />
+                </div>
             </div>
             <div class="form-group">
-                <label for="profilePicture">Profile Picture:</label>
-                <input type="file" id="profilePicture" @change="handleFileUpload" />
+                <div v-if="isGroup">
+                    <label for="profilePicture">Profile Picture:</label>
+                    <input type="file" id="groupPicture" @change="handleFileUpload" required/>
+                </div>
+                <div v-else>
+                    <label for="profilePicture">Profile Picture:</label>
+                    <input type="file" id="profilePicture" @change="handleFileUpload" />
+                </div>
             </div>
             <button type="submit">Save</button>
         </form>

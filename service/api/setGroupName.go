@@ -35,7 +35,7 @@ func (rt *_router) setGroupName(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	err = rt.db.SetGroupName(id, name.Name)
+	err = rt.db.SetGroupName(groupid, name.Name)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

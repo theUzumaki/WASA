@@ -126,6 +126,7 @@ export default {
 				  return chat.members[1].picture;
 				}
 			} else {
+				console.log("NAME: ", chat.name, "PICTURE: ", chat.picture)
 				return chat.picture
 			}
 		},

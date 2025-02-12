@@ -34,7 +34,6 @@ func (db *appdbimpl) LoginManager(user User) (User, string, error) {
 	} else {
 		id, err = strconv.Atoi(stringId)
 		if err != nil {
-			log.Println(err.Error())
 			return newuser, "", err
 		}
 	}

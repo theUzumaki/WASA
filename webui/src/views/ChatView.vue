@@ -6,6 +6,7 @@ export default {
 			errormsg: null,
 			loading: false,
 			search: false,
+			isGroup: false,
 			messages: JSON.parse(sessionStorage.chat).messages
 		}
 	},
@@ -106,10 +107,19 @@ export default {
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.search= false
 		},
 		checkPresence(usertosearch){
 			const members = JSON.parse(sessionStorage.chat).members;
-			return members.some(member => member.id === usertosearch.id);
+			return !(members.some(member => member.id === usertosearch.id));
+		},
+		checkGroup(){
+			const name = JSON.parse(sessionStorage.chat).name;
+			if (name == "chat"){
+				this.isGroup= false
+			} else {
+				this.isGroup= true
+			}
 		},
 		startMessageLoading() {
 			this.intervalId = setInterval(() => {
@@ -129,6 +139,7 @@ export default {
 	},
 	mounted() {
 	    this.startMessageLoading();
+		this.checkGroup();
 	},
 	beforeRouteLeave(){
 		this.stopMessageLoading();
@@ -156,7 +167,7 @@ export default {
                 </div>
 				<div v-if="this.search" style="position: absolute; top:50px; left:77%">
 					<div v-for="user in users" :key="user.id">
-						<button v-if="!checkPresence(user)" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
+						<button v-if="this.checkPresence(user)" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
 					</div>
@@ -165,15 +176,18 @@ export default {
 					<input type="text" class="form-control" placeholder="Type message"
 					v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)" style="position: fixed; bottom: 30px; width: 30%;" >
 					<button @click="triggerFileInput" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
-						Add Image
+						Send Image
 					</button>
 					<button @click=leaveGroup() style="position: fixed; bottom: 30px; right: 35%; margin-left: 10px;">
-						Leave group
+						Leave group/chat
 					</button>
-					<input v-if=this.search type="text" class="form-control" placeholder="Find user to add"
+					<input v-if="this.search && this.isGroup" type="text" class="form-control" placeholder="Find user to add"
 					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
-					<button @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 10px;">
+					<button v-if="this.isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 10px;">
 						Add to group
+					</button>
+					<button v-if="this.isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; right: 15%; margin-left: 10px;">
+						Group Settings
 					</button>
 					<input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" accept="image/*">
 				</div>

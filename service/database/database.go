@@ -52,6 +52,8 @@ type AppDatabase interface {
 
 	SetGroupName(id string, newname string) error
 
+	SetGroupPhoto(id string, newname string) error
+
 	GetUserId(name string) (User, error)
 
 	GetUsers(name string) ([]User, error)
