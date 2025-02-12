@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 
@@ -25,6 +26,7 @@ func (rt *_router) commentMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	err = rt.db.CommentMessage(messageid, comment.Text)
 	if err != nil {
+		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

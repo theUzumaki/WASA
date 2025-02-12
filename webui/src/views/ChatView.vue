@@ -7,6 +7,8 @@ export default {
 			loading: false,
 			search: false,
 			isGroup: false,
+			message_operations: false,
+			message: null,
 			messages: JSON.parse(sessionStorage.chat).messages
 		}
 	},
@@ -48,6 +50,38 @@ export default {
                 });
 				sessionStorage.chat = JSON.stringify(response.data)
 				this.messages = JSON.parse(sessionStorage.chat).messages
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+		},
+		setMessage(message){
+			this.message_operations= true;
+			this.message= message;
+		},
+		deleteMessage(){
+			try {
+				let response = this.$axios.delete("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+JSON.parse(sessionStorage.chat).id+"/message/"+this.message.id, {
+					headers: {
+						"Authorization": JSON.parse(sessionStorage.user).id
+					}
+				})
+				this.loadMessages();
+				this.message_operations= false;
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+		},
+		commentMessage(emoji){
+			try {
+				let response = this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+JSON.parse(sessionStorage.chat).id+"/message/"+this.message.id+"/comment", {
+					content: emoji
+				}, {
+					headers: {
+						"Authorization": JSON.parse(sessionStorage.user).id
+					}
+				})
+				this.loadMessages();
+				this.message_operations= false;
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -157,12 +191,14 @@ export default {
 				<div v-for="message in this.messages" :key="message.id">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
+						<button @click="setMessage(message)">
 						<div v-if="isBase64Image(message.content)">
-							<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/>
+							<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> {{ message.comment }}
 						</div>
 						<div v-else>
-							{{ message.content }}
+							{{ message.content }} {{ message.comment }}
 						</div>
+						</button>
 					</div>
                 </div>
 				<div v-if="this.search" style="position: absolute; top:50px; left:77%">
@@ -170,6 +206,18 @@ export default {
 						<button v-if="this.checkPresence(user)" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
+					</div>
+				</div>
+				<div v-if="message_operations" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
+					<button @click="this.deleteMessage()">Delete Message</button><br>
+					<div>
+						<button @click="commentMessage('😊')">😊</button>
+						<button @click="commentMessage('😂')">😂</button>
+						<button @click="commentMessage('😢')">😢</button>
+						<button @click="commentMessage('😡')">😡</button>
+					</div>
+					<div v-if="messageHasComment">
+						<button @click="uncommentMessage">Uncomment Message</button>
 					</div>
 				</div>
 				<div class="btn-group me-2" >
