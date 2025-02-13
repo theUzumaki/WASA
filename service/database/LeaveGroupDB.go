@@ -1,10 +1,5 @@
 package database
 
-import (
-	"database/sql"
-	"errors"
-)
-
 func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 
 	_, err := db.c.Exec("DELETE FROM chat_user WHERE chatId = ? AND userId = ?", chatId, userId)
@@ -12,16 +7,25 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 		return err
 	}
 
-	row := db.c.QueryRow("SELECT chatId FROM chat_user WHERE chatId = ?", chatId)
+	rows, err := db.c.Query("SELECT chatId FROM chat_user WHERE chatId = ?", chatId)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
 
-	err = row.Scan(nil)
-	if errors.Is(err, sql.ErrNoRows) {
+	var i int = 0
+	for rows.Next() {
+		i++
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	if i < 2 {
 		_, err := db.c.Exec("DELETE FROM chats WHERE chatId = ?", chatId)
 		if err != nil {
 			return err
 		}
-	} else if err != nil {
-		return err
 	}
 
 	return err

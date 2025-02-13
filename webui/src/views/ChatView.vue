@@ -55,9 +55,56 @@ export default {
 				this.errormsg = e.toString();
 			}
 		},
+		async forwardMessage(user) {
+			let chatpic= null
+			let chatname= "chat"
+			
+			try {
+				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
+					name: chatname,
+					members: [{
+						name: JSON.parse(sessionStorage.user).name,
+						id: parseInt(JSON.parse(sessionStorage.user).id),
+						picture: JSON.parse(sessionStorage.user).picture
+					}, {
+						name: user.name,
+						id: user.id,
+						picture: user.picture
+					}],
+					picture: chatpic
+				}, {
+					headers: {
+						"Authorization": JSON.parse(sessionStorage.user).id
+					}
+				});
+				let chat_obt = response.data;
+				let formData = new FormData();
+                formData.append('chat_id', chat_obt.id);
+                formData.append('sender_id', JSON.parse(sessionStorage.user).id);
+				formData.append('sender_name', JSON.parse(sessionStorage.user).name);
+				formData.append('sender_pic', JSON.parse(sessionStorage.user).picture);
+                formData.append('date', new Date().toISOString());
+                formData.append('content', this.message.content);
+
+                response = this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+chat_obt.id,
+					formData, {
+                    headers: {
+                        "Authorization": JSON.parse(sessionStorage.user).id,
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+
+				alert("Message forwarded successfully!");
+
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+		},
 		setMessage(message){
-			this.message_operations= true;
+			if ( this.message_operations ) this.message_operations= false;
+			else this.message_operations= true;
 			this.message= message;
+			console.log("MESSAGE: ", this.message, " operations: ", message_operations)
 		},
 		deleteMessage(){
 			try {
@@ -179,6 +226,17 @@ export default {
 			}
 			return comments
 		},
+		checkProperty(message){
+			if (JSON.parse(sessionStorage.user).id == message.sender.id) return true;
+			else return false;
+		},
+		checkCommentProperty(message){
+			console.log("ID: ", message.comm_senders.sender.id, " ID: ", )
+			if (message.comm_senders.sender.id != JSON.parse(sessionStorage.user).id){
+				return false
+			}
+			return true
+		},
 		startMessageLoading() {
 			this.intervalId = setInterval(() => {
         		this.loadMessages();
@@ -212,7 +270,7 @@ export default {
     <div>
         <div class="homescreen">
 			<div class="list-group-item list-group-item-action" style="left: 0px; margin-block-end: 70px;">
-				<div v-for="message in this.messages" :key="message.id">
+				<div v-for="message in messages" :key="message.id">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
 						<button @click="setMessage(message)">
@@ -225,31 +283,31 @@ export default {
 						</button>
 					</div>
                 </div>
-				<div v-if="this.search" style="position: absolute; top:50px; left:77%">
+				<div v-if="search" style="position: absolute; top:50px; left:77%">
 					<div v-for="user in users" :key="user.id">
-						<div v-if="this.checkPresence(user)">
-						<button v-if="this.isGroup" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
+						<div v-if="checkPresence(user)">
+						<button v-if="isGroup" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button>
-						<button v-else-if="this.forward" type="button" class="btn btn-to-the-right" @click="newChat(user)">
+						<button v-else-if="forward" type="button" class="btn btn-to-the-right" @click="forwardMessage(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
 						</div>
 					</div>
 				</div>
 				<div v-if="message_operations" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-					<button @click="this.deleteMessage()">Delete Message</button><br>
-					<div>
+					<button v-if="checkProperty(message)" @click="deleteMessage()">Delete Message</button><br>
+					<div v-if="!checkProperty(message)">
 						<button @click="commentMessage('😊')">😊</button>
 						<button @click="commentMessage('😂')">😂</button>
 						<button @click="commentMessage('😢')">😢</button>
 						<button @click="commentMessage('😡')">😡</button>
 					</div>
-					<div v-if="this.message.comment != null || this.message.comment != '_'">
+					<div v-if="checkCommentProperty(message)">
 						<button @click="uncommentMessage">Uncomment Message</button>
 					</div>
 					<div>
-						<button @click="this.search = true; this.forward = true">Forward Message</button>
+						<button @click="changeSearchState(); forward = true">Forward Message</button>
 					</div>
 				</div>
 				<div class="btn-group me-2" >
@@ -261,12 +319,12 @@ export default {
 					<button @click=leaveGroup() style="position: fixed; bottom: 30px; right: 35%; margin-left: 10px;">
 						Leave group/chat
 					</button>
-					<input v-if="this.search && (this.isGroup || this.forward)" type="text" class="form-control" placeholder="Find user to add"
+					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find user to add"
 					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
-					<button v-if="this.isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 10px;">
+					<button v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 10px;">
 						Add to group
 					</button>
-					<button v-if="this.isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; right: 15%; margin-left: 10px;">
+					<button v-if="isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; right: 15%; margin-left: 10px;">
 						Group Settings
 					</button>
 					<input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" accept="image/*">

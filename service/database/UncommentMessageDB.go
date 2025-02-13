@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"log"
 )
 
 func (db *appdbimpl) UncommentMessage(messageid string, senderid string) error {
@@ -11,6 +12,7 @@ func (db *appdbimpl) UncommentMessage(messageid string, senderid string) error {
 
 	var id string
 	err := row.Scan(&id)
+	log.Println("STRING: ", id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return errors.New("no comments")
 	} else if err != nil {

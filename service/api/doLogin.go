@@ -28,7 +28,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	imagePath := "webui/blue-profile-icon-free-png.jpg"
+	imagePath := "./profilepic/blue-profile-icon-free-png.jpg"
 	imageData, err := ioutil.ReadFile(imagePath)
 	if err != nil {
 		http.Error(w, "Unable to read image", http.StatusInternalServerError)

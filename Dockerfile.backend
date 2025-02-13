@@ -16,8 +16,9 @@ FROM debian:bullseye
 EXPOSE 3000 4000
 
 ### Create a directory for the storage and copy the default propic there
-RUN mkdir -p /app/storage
-#COPY storage/default_profile_photo.jpg /app/storage/default_profile_photo.jpg
+RUN mkdir -p /app/profilepic
+COPY profilepic/blue-profile-icon-free-png.jpg /app/profilepic/blue-profile-icon-free-png.jpg
+
 
 ### Copy the build executable from the builder image
 WORKDIR /app/

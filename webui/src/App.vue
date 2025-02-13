@@ -54,9 +54,9 @@ export default {
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
 				<div class="position-sticky pt-3 sidebar-sticky">
-					<div v-if=this.logged class="d-flex align-items-center px-3 mb-3">
-						<img :src="this.picture" alt="User Profile" class="rounded-circle" width="40" height="40">
-						{{ this.username }}
+					<div v-if=logged class="d-flex align-items-center px-3 mb-3">
+						<img :src="picture" alt="User Profile" class="rounded-circle" width="40" height="40">
+						{{ username }}
 					</div>
 					<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-1 text-muted text-uppercase">
 						<span>General</span>

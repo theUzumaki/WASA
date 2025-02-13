@@ -27,7 +27,9 @@ export default {
 			this.loading = false;
 		},
 		async addUserToGroup(user){
-			this.selectedUsers.push(user)
+			const members = this.selectedUsers;
+			if (!(members.some(member => member.id === user.id)))
+				this.selectedUsers.push(user)
 		},
 		async newChat(userlist, groupname, grouppic){
 			this.search = false;
@@ -174,7 +176,7 @@ export default {
 				<div v-if="showGroupForm" class="group-form" style="position: relative; top: 75px; width: 30%;">
 					<div class="form-group">
 						<label for="groupName">Group Name</label>
-						<input type="text" class="form-control" id="groupName" v-model="this.groupName">
+						<input type="text" class="form-control" id="groupName" v-model="groupName">
 						<br>
 					</div>
 					<div class="form-group">
@@ -184,12 +186,12 @@ export default {
 					</div>
 					<div class="form-group">
 						<label for="groupMembers">Search users in the bar on the corner</label>
-						<select multiple class="form-control" id="groupMembers" v-model="this.selectedUsers">
-							<option v-for="user in this.selectedUsers" :key="user.id" :value="user">{{ user.name }}</option>
+						<select multiple class="form-control" id="groupMembers" v-model="selectedUsers">
+							<option v-for="user in selectedUsers" :key="user.id" :value="user">{{ user.name }}</option>
 						</select>
 						<br>
 					</div>
-					<button type="button" class="btn btn-primary" @click="newChat(this.selectedUsers, this.groupName, this.groupPicture)">Create Group</button>
+					<button type="button" class="btn btn-primary" @click="newChat(selectedUsers, groupName, groupPicture)">Create Group</button>
 					<button type="button" class="btn btn-secondary" @click="showGroupForm = false">Cancel</button>
 				</div>
 			</div>
