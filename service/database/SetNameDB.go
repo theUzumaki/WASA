@@ -8,7 +8,7 @@ import (
 
 func (db *appdbimpl) SetName(id string, newname string) error {
 
-	row := db.c.QueryRow("SELECT * FROM users WHERE userName = ?", newname)
+	row := db.c.QueryRow("SELECT * FROM users WHERE userName = ? AND userId <> ?", newname, id)
 
 	var user User
 	err := row.Scan(&user.Id, &user.Name, &user.Picture)

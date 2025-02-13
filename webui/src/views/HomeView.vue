@@ -10,6 +10,7 @@ export default {
 			search: false,
 			showGroupForm: false,
 			selectedUsers: [],
+			username: null,
 			groupName: null,
 			groupPicture: null,
 		}
@@ -49,7 +50,6 @@ export default {
 					chatpic= grouppic
 					chatname= groupname
 				}
-				console.log("NEW CHAT: ", chatname, " - ", newmembers, " - ", grouppic)
 
 				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
 					name: chatname,
@@ -69,6 +69,7 @@ export default {
 		},
 		async getUsers(name = ""){
 			this.errormsg = null;
+			this.username= JSON.parse(sessionStorage.user).name
 			try {
 				if (name.length < 1) throw "It has to have at least 1 character"
 				let response = await this.$axios.get("/users/"+JSON.parse(sessionStorage.user).id+"/search/"+name, {
@@ -143,9 +144,11 @@ export default {
     		}
     	},
 	},
-	mounted() {
-	    this.startChatLoading();
-	},
+	beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.startChatLoading();
+    });
+  },
 	beforeRouteLeave(){
 		this.stopChatLoading();
 	},

@@ -15,8 +15,10 @@ export default {
 	methods: {
 		loadUser(){
 			this.logged= true;
-			this.picture= JSON.parse(sessionStorage.user).picture
-			this.username= JSON.parse(sessionStorage.user).name
+			if (sessionStorage.user != null){
+				this.picture= JSON.parse(sessionStorage.user).picture
+				this.username= JSON.parse(sessionStorage.user).name
+			}
 		},
 		startUserLoading() {
 			this.intervalId = setInterval(() => {

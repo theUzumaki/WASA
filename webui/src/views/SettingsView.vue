@@ -84,8 +84,6 @@ export default {
                 else {
                     this.errormsg = e.toString();
                 }
-                console.log("FIRST: ", e.toString())
-                console.log("SECOND: ", e.response.data)
             }
             this.username = '';
             this.groupname = '';
