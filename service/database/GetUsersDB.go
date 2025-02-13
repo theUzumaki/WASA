@@ -12,6 +12,10 @@ func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
 	var users []User
 	for rowsUsers.Next() {
 		var user User
+		if rowsUsers.Err() != nil {
+			return nil, err
+		}
+
 		err = rowsUsers.Scan(&user.Id, &user.Name, &user.Picture)
 		if err != nil {
 			return nil, err

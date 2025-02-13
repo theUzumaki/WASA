@@ -34,6 +34,9 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 
 	for rowsMembers.Next() {
 		var member User
+		if err := rowsMembers.Err(); err != nil {
+			return chat, err
+		}
 
 		err := rowsMembers.Scan(&member.Id, &member.Name, &member.Picture)
 		if err != nil {
@@ -44,6 +47,9 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 
 	for rowsMessages.Next() {
 		var message Message
+		if err := rowsMessages.Err(); err != nil {
+			return chat, err
+		}
 
 		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Sender.Id, &message.Sender.Name, &message.Sender.Picture, &message.ChatId)
 		if err != nil {
@@ -58,6 +64,9 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 		for rows.Next() {
 			var user User
 			var comment Comment
+			if rows.Err() != nil {
+				return chat, err
+			}
 			err = rows.Scan(&user.Id, &user.Name, &user.Picture, &comment.Id, &comment.Content)
 			if err != nil {
 				return chat, err

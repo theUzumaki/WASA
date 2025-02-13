@@ -15,6 +15,10 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 		}
 		for rows1.Next() {
 			var chatid string
+			if rows1.Err() != nil {
+				return -1, err
+			}
+
 			err = rows1.Scan(&chatid)
 			if err != nil {
 				return -1, err
@@ -26,6 +30,9 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 
 				count := 0
 				for rows2.Next() {
+					if rows2.Err() != nil {
+						return -1, err
+					}
 					count++
 				}
 				if count != 2 {
@@ -39,6 +46,9 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 				check := 0
 				if rows2.Next() {
 					var id int
+					if rows2.Err() != nil {
+						return -1, err
+					}
 					err := rows2.Scan(&id)
 					if err != nil {
 						return -1, err

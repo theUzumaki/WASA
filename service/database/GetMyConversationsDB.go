@@ -15,6 +15,10 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]Chat, error) {
 	var chats []Chat
 	for rowsChat.Next() {
 		var chat Chat
+		if rowsChat.Err() != nil {
+			return nil, err
+		}
+
 		if rowsChat.Scan(&chat.Id, &chat.Name, &chat.Picture) != nil {
 			return nil, err
 		}
