@@ -161,10 +161,12 @@ export default {
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Home page</h1>
 			<div class= "homescreen">
-				<div v-if= "showGroupForm == false" v-for="chat in chats" style="position: relative; top:50px;">
-					<button type="button" class="btn" @click="openChat(chat)">
-						<img :src=displayChatPic(chat) alt="User Profile" class="rounded-circle" width="40" height="40"> {{ displayMemberName(chat) }}
-					</button> <br>
+				<div v-if= "showGroupForm == false">
+					<div v-for="chat in chats" :key="chat.id" style="position: relative; top:50px;">
+						<button type="button" class="btn" @click="openChat(chat)">
+							<img :src=displayChatPic(chat) alt="User Profile" class="rounded-circle" width="40" height="40"> {{ displayMemberName(chat) }}
+						</button> <br>
+					</div>
 				</div>
 				<div v-if="search" style="position: absolute; top:50px; left:77%">
 					<div v-for="user in users" :key="user.id">

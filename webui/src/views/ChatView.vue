@@ -101,10 +101,14 @@ export default {
 			}
 		},
 		setMessage(message){
-			if ( this.message_operations ) this.message_operations= false;
+			if ( this.message_operations ) {
+				this.message_operations= false;
+				this.forward= false;
+			}
 			else this.message_operations= true;
 			this.message= message;
-			console.log("MESSAGE: ", this.message, " operations: ", message_operations)
+			console.log("MESSAGE: ", this.message)
+			console.log(" operations: ", this.message_operations)
 		},
 		deleteMessage(){
 			try {
@@ -231,12 +235,17 @@ export default {
 			else return false;
 		},
 		checkCommentProperty(message){
-			console.log("ID: ", message.comm_senders.sender.id, " ID: ", )
-			if (message.comm_senders.sender.id != JSON.parse(sessionStorage.user).id){
-				return false
+			console.log("user ID: ", JSON.parse(sessionStorage.user).id)
+			if (message.comm_senders != null) {
+				for (let cs of message.comm_senders) {
+					console.log("sender ID: ", cs.sender.id)
+					if (cs.sender.id == JSON.parse(sessionStorage.user).id) {
+						return true;
+					}
+				}
 			}
-			return true
-		},
+			return false
+			},
 		startMessageLoading() {
 			this.intervalId = setInterval(() => {
         		this.loadMessages();
