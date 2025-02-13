@@ -88,6 +88,27 @@ paths:
         "200":
           $ref: "#/components/responses/twohund"
 
+  /users/{id}/search/{name}:
+    parameters:
+      - $ref: "#/components/parameters/user_id"
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: ["users operations"]
+      operationId: getUsers
+      security:
+        - bearerAuth: []
+      summary: get the specified users
+      description: |
+        Gets the user with the name in path
+      responses:
+        "200": 
+          description: Users found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersCollection"
+
+
   /users/{id}/groups/{group_id}:
     parameters:
         - $ref: "#/components/parameters/user_id"
@@ -343,6 +364,21 @@ components:
       schema:
         $ref: "#/components/schemas/Id"
       description: identifier
+    name:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            pattern: 'ˆ.*?$'
+            minLength: 1
+            maxLength: 32
+            example: Luigi
+            description: The name of the users to search
+      description: identifier    
   schemas:
     UserName:
       type: object
@@ -398,21 +434,6 @@ components:
       example:
         id:
           value: 17
-    ListOfUser:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: "components/schemas/Id"
-          minItems: 0
-          maxItems: 100
-          description: List of users
-      example:
-        response:
-          users: [10, 187]
-      required: [users]
-      description: List of users
     User:
       type: object
       properties:
@@ -454,15 +475,6 @@ components:
           pattern: 'ˆ.*?$'
           description: Reaction to the message
       description: Message object
-    Group:
-      type: object
-      properties:
-        id:
-          $ref: "components/parameters/id"
-        name:
-          $ref: "components/schemas/groupName"
-        picture:
-          $ref: "components/schemas/Image"
     Chat:
       type: object
       properties:
@@ -516,6 +528,22 @@ components:
         conversations:
           - chat1
           - chat2
+    UsersCollection:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          minItems: 0
+          maxItems: 100
+          description: Array of users
+      required: [users]
+      description: object array of all users
+      example:
+        users:
+          - user1
+          - user2
     Twozeroresp:
       type: string
       minLength: 1
