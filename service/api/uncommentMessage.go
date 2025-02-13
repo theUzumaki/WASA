@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 
@@ -21,9 +20,11 @@ func (rt *_router) uncommentMessage(w http.ResponseWriter, r *http.Request, ps h
 		return
 	}
 
-	err := rt.db.UncommentMessage(messageid)
-	if err != nil {
-		log.Fatal(err.Error())
+	err := rt.db.UncommentMessage(messageid, userid)
+	if err != nil && err.Error() == "no comments" {
+		http.Error(w, "No comment from user", http.StatusExpectationFailed)
+		return
+	} else if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

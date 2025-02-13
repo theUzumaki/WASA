@@ -10,13 +10,23 @@ type User struct {
 	Picture string `json:"picture"`
 }
 
+type Comment struct {
+	Content string `json:"content"`
+	Id      int    `json:"id"`
+}
+
+type CommentSender struct {
+	Sender  User    `json:"sender"`
+	Comment Comment `json:"comment"`
+}
+
 type Message struct {
-	Id      int       `json:"id"`
-	ChatId  int       `json:"chat_id"`
-	Sender  User      `json:"sender"`
-	Date    time.Time `json:"date"`
-	Content string    `json:"content"`
-	Comment string    `json:"comment"`
+	Id          int             `json:"id"`
+	ChatId      int             `json:"chat_id"`
+	Sender      User            `json:"sender"`
+	CommSenders []CommentSender `json:"comm_senders"`
+	Date        time.Time       `json:"date"`
+	Content     string          `json:"content"`
 }
 
 type Group struct {

@@ -68,9 +68,9 @@ type AppDatabase interface {
 
 	DeleteMessage(messageid string) error
 
-	CommentMessage(comment string, messageid string) error
+	CommentMessage(comment string, messageid string, senderid string) error
 
-	UncommentMessage(messageid string) error
+	UncommentMessage(messageid string, senderid string) error
 
 	Ping() error
 }
@@ -101,6 +101,10 @@ func New(db *sql.DB) (AppDatabase, error) {
 		if err != nil {
 			return nil, fmt.Errorf("messages table creation error %w", err)
 		}
+		_, err = db.Exec(comments)
+		if err != nil {
+			return nil, fmt.Errorf("comments table creation error %w", err)
+		}
 		_, err = db.Exec(chats)
 		if err != nil {
 			return nil, fmt.Errorf("chats table creation error %w", err)
@@ -112,6 +116,14 @@ func New(db *sql.DB) (AppDatabase, error) {
 		_, err = db.Exec(chat_user)
 		if err != nil {
 			return nil, fmt.Errorf("chat_user table creation error %w", err)
+		}
+		_, err = db.Exec(comment_message)
+		if err != nil {
+			return nil, fmt.Errorf("comment_message table creation error %w", err)
+		}
+		_, err = db.Exec(comment_user)
+		if err != nil {
+			return nil, fmt.Errorf("comment_user table creation error %w", err)
 		}
 		_, err = db.Exec(message_user)
 		if err != nil {

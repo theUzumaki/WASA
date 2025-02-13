@@ -11,8 +11,13 @@ var messages = `CREATE TABLE IF NOT EXISTS messages (
 	messageId INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	content TEXT NOT NULL,
-	comment TEXT DEFAULT NULL,
 	PRIMARY KEY (messageId)
+);`
+
+var comments = `CREATE TABLE IF NOT EXISTS comments (
+	commentId INTEGER NOT NULL,
+	content TEXT NOT NULL,
+	PRIMARY KEY (commentId)
 );`
 
 var chats = `CREATE TABLE IF NOT EXISTS chats (
@@ -39,6 +44,26 @@ var chat_user = `CREATE TABLE IF NOT EXISTS chat_user (
 	FOREIGN KEY (chatId) REFERENCES chats(chatId)
 		ON DELETE CASCADE
 	FOREIGN KEY (userId) REFERENCES users(userId)
+		ON DELETE CASCADE
+);`
+
+var comment_message = `CREATE TABLE IF NOT EXISTS comment_message (
+	commentId INTEGER NOT NULL,
+	messageId INTEGER NOT NULL,
+	PRIMARY KEY (messageId, commentId),
+	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
+	FOREIGN KEY (commentId) REFERENCES comments(commentId)
+		ON DELETE CASCADE
+);`
+
+var comment_user = `CREATE TABLE IF NOT EXISTS comment_user (
+	commentId INTEGER NOT NULL,
+	userId INTEGER NOT NULL,
+	PRIMARY KEY (userId, commentId),
+	FOREIGN KEY (userId) REFERENCES users(userId)
+		ON DELETE CASCADE
+	FOREIGN KEY (commentId) REFERENCES comments(commentId)
 		ON DELETE CASCADE
 );`
 

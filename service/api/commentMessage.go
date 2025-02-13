@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 
@@ -13,10 +12,10 @@ func (rt *_router) commentMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	userid := ps.ByName("id")
 	messageid := ps.ByName("message_id")
-	var comment text
+	var comm text
 
-	err := json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil || messageid == "" || comment.Text == "" {
+	err := json.NewDecoder(r.Body).Decode(&comm)
+	if err != nil || messageid == "" || comm.Text == "" {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	}
 
@@ -24,9 +23,8 @@ func (rt *_router) commentMessage(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	err = rt.db.CommentMessage(messageid, comment.Text)
+	err = rt.db.CommentMessage(messageid, comm.Text, userid)
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

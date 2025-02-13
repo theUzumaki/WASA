@@ -21,7 +21,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 		return chat, err
 	}
 	rowsMessages, err := db.c.Query(
-		`SELECT	chat_message.messageId, messages.date, messages.content, messages.comment, users.userId, users.userName, users.picture, chats.chatId 
+		`SELECT	chat_message.messageId, messages.date, messages.content, users.userId, users.userName, users.picture, chats.chatId 
 		FROM chats
 		JOIN chat_message ON chat_message.chatId = chats.chatId
 		JOIN messages ON chat_message.messageId = messages.messageId
@@ -45,7 +45,30 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 	for rowsMessages.Next() {
 		var message Message
 
-		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Comment, &message.Sender.Id, &message.Sender.Name, &message.Sender.Picture, &message.ChatId)
+		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Sender.Id, &message.Sender.Name, &message.Sender.Picture, &message.ChatId)
+		if err != nil {
+			return chat, err
+		}
+
+		// Collects all the comments and their senders
+		rows, err := db.c.Query("SELECT users.userId, users.userName, users.picture, comments.commentId, comments.content FROM messages JOIN comment_message ON comment_message.messageId = messages.messageId JOIN comments ON comments.commentId = comment_message.commentId JOIN comment_user ON comments.commentId = comment_user.commentId JOIN users ON users.userId = comment_user.userId WHERE messages.messageId = ?", message.Id)
+		if err != nil {
+			return chat, err
+		}
+		for rows.Next() {
+			var user User
+			var comment Comment
+			err = rows.Scan(&user.Id, &user.Name, &user.Picture, &comment.Id, &comment.Content)
+			if err != nil {
+				return chat, err
+			}
+			var comm_send CommentSender = CommentSender{
+				Sender:  user,
+				Comment: comment,
+			}
+			message.CommSenders = append(message.CommSenders, comm_send)
+		}
+		err = rows.Close()
 		if err != nil {
 			return chat, err
 		}

@@ -20,7 +20,7 @@ func (db *appdbimpl) SendMessage(message Message) (Chat, error) {
 		return chat, err
 	}
 	message.Id++
-	_, err = db.c.Exec("INSERT INTO messages VALUES (?,?,?,?)", message.Id, message.Date, message.Content, message.Comment)
+	_, err = db.c.Exec("INSERT INTO messages VALUES (?,?,?)", message.Id, message.Date, message.Content)
 	if err != nil {
 		return chat, err
 	}
