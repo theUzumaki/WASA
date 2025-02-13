@@ -58,24 +58,35 @@ export default {
                             "Authorization": JSON.parse(sessionStorage.user).id
                         }
                     });
-                    response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
-                        id: JSON.parse(sessionStorage.user).id,
-                        name: this.username,
-                        picture: this.profilePicture
-                    }, {
-                        headers: {
-                            "Authorization": JSON.parse(sessionStorage.user).id
-                        }
-                    });
+                    let newpic= JSON.parse(sessionStorage.user).picture
+                    if (this.profilePicture != null) {
+                        response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
+                            id: JSON.parse(sessionStorage.user).id,
+                            name: this.username,
+                            picture: this.profilePicture
+                        }, {
+                            headers: {
+                                "Authorization": JSON.parse(sessionStorage.user).id
+                            }
+                        });
+                        newpic= this.profilePicture
+                    }
                     sessionStorage.user = JSON.stringify({
                         id: JSON.parse(sessionStorage.user).id,
                         name: this.username,
-                        picture: this.profilePicture
+                        picture: newpic
                     })
                 }
 			} catch (e) {
-                this.errormsg = e.toString();
-			}
+                if (e.toString() == "AxiosError: Request failed with status code 400") {
+                    this.errormsg = "Name already taken"
+                }
+                else {
+                    this.errormsg = e.toString();
+                }
+                console.log("FIRST: ", e.toString())
+                console.log("SECOND: ", e.response.data)
+            }
             this.username = '';
             this.groupname = '';
             this.profilePicture = null;

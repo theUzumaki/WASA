@@ -31,7 +31,10 @@ func (rt *_router) setName(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	err = rt.db.SetName(id, user.Name)
-	if err != nil {
+	if err != nil && err.Error() == "already taken" {
+		http.Error(w, "Name already in use", http.StatusBadRequest)
+		return
+	} else if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
