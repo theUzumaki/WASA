@@ -1,8 +1,8 @@
 
 services:
   init:
-    image: alpine:latest
-    command: ["sh", "-c", "echo 'Alpine image pulled'"]
+    image: debian:bullseye-slim
+    command: ["sh", "-c", "echo 'Debian image pulled'"]
 
   node:
     image: node:18.12.0
@@ -25,13 +25,11 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - "80:80"
+      - "8080:8080"
     volumes:
       - .:/app
-    user: root
-    command: ["sh", "-c", "cd /app && ./webui"]
     environment:
-      - ENV=development
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000
     depends_on:
       - init
       - node

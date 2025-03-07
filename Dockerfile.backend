@@ -1,43 +1,19 @@
 FROM golang:1.19.1 AS builder
 
-ENV GOFLAGS="-buildvcs=false"
-
-# Set the working directory inside the container
-WORKDIR /app
-
-# Copy the Go module files
-COPY go.mod go.sum ./
-
-# Download the Go module dependencies
-RUN go mod download
-
-# Copy the rest of the application source code
+WORKDIR /src/
 COPY . .
 
-### Build executables
 RUN go build -o /app/webapi ./cmd/webapi
 
-# Use a minimal base image for the final stage
-FROM alpine:latest
+FROM debian:bullseye-slim
 
-# Set the working directory inside the container
-WORKDIR /app
+EXPOSE 3000 4000
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/webapi /app/webapi
-
-# Expose the port the application runs on
-EXPOSE 3000
-
-### Create a directory for the storage and copy the default propic there
 RUN mkdir -p /app/stdpics
 COPY stdpics/profilepic.jpg /app/stdpics/profilepic.jpg
 COPY stdpics/grouppic.jpg /app/stdpics/grouppic.jpg
 
-
-### Copy the build executable from the builder image
 WORKDIR /app/
 COPY --from=builder /app/webapi ./
 
-### Executable command
 CMD ["/app/webapi"]
