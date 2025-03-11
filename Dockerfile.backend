@@ -5,7 +5,7 @@ COPY . .
 
 RUN go build -o /app/webapi ./cmd/webapi
 
-FROM debian:bullseye-slim
+FROM debian:bullseye
 
 EXPOSE 3000 4000
 

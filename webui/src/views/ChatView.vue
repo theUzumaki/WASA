@@ -222,13 +222,14 @@ export default {
 			}
 		},
 		getComment(message){
-			var comments= []
+
+			let c_s = [];
 			if (message.comm_senders != null) {
 				message.comm_senders.forEach(cs => {
-					comments.push(cs.comment.content);
+					c_s.push({ comment: cs.comment.content, sender: cs.sender.name });
 				});
 			}
-			return comments
+			return c_s;
 		},
 		checkProperty(message){
 			if (JSON.parse(sessionStorage.user).id == message.sender.id) return true;
@@ -246,6 +247,17 @@ export default {
 			}
 			return false
 			},
+		getChatName() {
+			if (JSON.parse(sessionStorage.chat).name == "chat") {
+				if (JSON.parse(sessionStorage.user).name === JSON.parse(sessionStorage.chat).members[1].name) {
+				  return JSON.parse(sessionStorage.chat).members[0].name;
+				} else {
+				  return JSON.parse(sessionStorage.chat).members[1].name;
+				}
+			} else {
+				return JSON.parse(sessionStorage.chat).name
+			}
+		},
 		startMessageLoading() {
 			this.intervalId = setInterval(() => {
         		this.loadMessages();
@@ -277,22 +289,27 @@ export default {
 
 <template>
     <div>
+		<h1 style="position: absolute; top: 8%">{{ getChatName() }}</h1>
         <div class="homescreen">
 			<div class="list-group-item list-group-item-action" style="left: 0px; margin-block-end: 70px;">
 				<div v-for="message in messages" :key="message.id">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
 						<button @click="setMessage(message)">
-						<div v-if="isBase64Image(message.content)">
-							<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> {{ message.comment }}
-						</div>
-						<div v-else>
-							{{ message.content }} <span v-for="(comment, index) in getComment(message)" :key="index">{{ comment }}<span v-if="index < getComment(message).length - 1">, </span></span>
-						</div>
+							<div v-if="isBase64Image(message.content)">
+								<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> 
+							</div>
+							<div v-else>
+								{{ message.content }}
+							</div>
 						</button>
 					</div>
+					<div>
+						<span v-for="(comment, index) in getComment(message)" :key="index">{{ comment.sender }} :{{ comment.comment }}<span v-if="index < getComment(message).length - 1">, </span></span>
+					</div>
+
                 </div>
-				<div v-if="search" style="position: absolute; top:50px; left:77%">
+				<div v-if="search" style="position: absolute; left:77%">
 					<div v-for="user in users" :key="user.id">
 						<div v-if="checkPresence(user)">
 						<button v-if="isGroup" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
@@ -325,12 +342,12 @@ export default {
 					<button @click="triggerFileInput" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
 						Send Image
 					</button>
-					<button @click=leaveGroup() style="position: fixed; bottom: 30px; right: 35%; margin-left: 10px;">
+					<button @click=leaveGroup() style="position: fixed; bottom: 30px; right: 32%; margin-left: 5%;">
 						Leave group/chat
 					</button>
 					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find user to add"
 					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
-					<button v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 10px;">
+					<button v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 5%;">
 						Add to group
 					</button>
 					<button v-if="isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; right: 15%; margin-left: 10px;">

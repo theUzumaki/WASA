@@ -165,13 +165,13 @@ export default {
 			<h1 class="h2">Home page</h1>
 			<div class= "homescreen">
 				<div v-if= "showGroupForm == false">
-					<div v-for="chat in chats" :key="chat.id" style="position: relative; top:50px;">
+					<div v-for="chat in chats" :key="chat.id" style="position: relative">
 						<button type="button" class="btn" @click="openChat(chat)">
 							<img :src=displayChatPic(chat) alt="User Profile" class="rounded-circle" width="40" height="40"> {{ displayMemberName(chat) }}
 						</button> <br>
 					</div>
 				</div>
-				<div v-if="search" style="position: absolute; top:50px; left:77%">
+				<div v-if="search" style="position: absolute; top: 0px; left:77%">
 					<div v-for="user in users" :key="user.id">
 						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="showGroupForm ? addUserToGroup(user) : newChat([user], null, user.picture)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
@@ -191,9 +191,9 @@ export default {
 					</div>
 					<div class="form-group">
 						<label for="groupMembers">Search users in the bar on the corner</label>
-						<select multiple class="form-control" id="groupMembers" v-model="selectedUsers">
-							<option v-for="user in selectedUsers" :key="user.id" :value="user">{{ user.name }}</option>
-						</select>
+						<ul class="list-group">
+							<li v-for="user in selectedUsers" :key="user.id" class="list-group-item">{{ user.name }}</li>
+						</ul>
 						<br>
 					</div>
 					<button type="button" class="btn btn-primary" @click="newChat(selectedUsers, groupName, groupPicture)">Create Group</button>
@@ -206,8 +206,8 @@ export default {
 				</button>
 				
 				<div class="btn-group me-2">
-					<input v-if="showGroupForm" type="text" class="form-control" placeholder="Find user to chat" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
-					<input v-else type="text" class="form-control" placeholder="User to add to group" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
+					<input v-if="showGroupForm" type="text" class="form-control" placeholder="User to add to group" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
+					<input v-else type="text" class="form-control" placeholder="New chat" v-model="searchQuery" @keyup.enter="getUsers(searchQuery)">
 				</div>
 			</div>
 		</div>

@@ -33,19 +33,23 @@ export default {
                             "Authorization": JSON.parse(sessionStorage.user).id
                         }
                     });
-                    response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id+"/picture", {
-                        picture: this.profilePicture
-                    }, {
-                        headers: {
-                            "Authorization": JSON.parse(sessionStorage.user).id
-                        }
-                    });
+                    let newpic= JSON.parse(sessionStorage.user).picture
+                    if (this.profilePicture != null) {
+                        response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id+"/picture", {
+                            picture: this.profilePicture
+                        }, {
+                            headers: {
+                                "Authorization": JSON.parse(sessionStorage.user).id
+                            }
+                        });
+                        newpic= this.profilePicture
+                    }
                     sessionStorage.chat = JSON.stringify({
                         id: JSON.parse(sessionStorage.chat).id,
                         name: this.groupname,
                         members: JSON.parse(sessionStorage.chat).members,
                         messages: JSON.parse(sessionStorage.chat).messages,
-                        picture: this.profilePicture
+                        picture: newpic
                     })
                     this.$router.push("/chat");
                 } else {
@@ -136,8 +140,8 @@ export default {
             </div>
             <div class="form-group">
                 <div v-if="isGroup">
-                    <label for="profilePicture">Profile Picture:</label>
-                    <input type="file" id="groupPicture" @change="handleFileUpload" required/>
+                    <label for="profilePicture">Group Picture:</label>
+                    <input type="file" id="groupPicture" @change="handleFileUpload" />
                 </div>
                 <div v-else>
                     <label for="profilePicture">Profile Picture:</label>

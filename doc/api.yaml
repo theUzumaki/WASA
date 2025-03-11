@@ -16,6 +16,7 @@ tags:
   - name: users operations
 
 paths:
+
   /session:
     post:
       tags: ["login"]
@@ -40,21 +41,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Id"
-    get:
-      tags: ["users operations"]
-      operationId: getUsers
-      security:
-        - bearerAuth: []
-      summary: Retrieves all the users
-      description: |
-        Given a specified username sends back all the matching users
-      responses:
-        "200":
-          description: User found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ListOfUser"
 
   /users/{id}/name:
     parameters:
@@ -102,35 +88,26 @@ paths:
         "200":
           $ref: "#/components/responses/twohund"
 
-  /users/{id}/groups:
+  /users/{id}/search/{name}:
     parameters:
       - $ref: "#/components/parameters/user_id"
-      - name: new_participant
-        in: query
-        required: false
-        schema:
-          $ref: "#/components/schemas/Id"
-        description: The user to add to the group
-    post:
-      tags: ["groups operations"]
-      operationId: addToGroup
+      - $ref: "#/components/parameters/name"
+    get:
+      tags: ["users operations"]
+      operationId: getUsers
       security:
         - bearerAuth: []
-      summary: adds user
+      summary: get the specified users
       description: |
-        Adds the user requested in the query to the group
-      requestBody:
-        description: User id to add
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Id"
-        required: true
+        Gets the user with the name in path
       responses:
-        "201":
-          $ref: "#/components/responses/twozeroone"
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
+        "200": 
+          description: Users found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersCollection"
+
 
   /users/{id}/groups/{group_id}:
     parameters:
@@ -387,13 +364,24 @@ components:
       schema:
         $ref: "#/components/schemas/Id"
       description: identifier
+    name:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^.*?$'
+        minLength: 1
+        maxLength: 32
+        example: Luigi
+        description: identifier    
   schemas:
     UserName:
       type: object
       properties:
         name:
           type: string
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           minLength: 3
           maxLength: 16
           example: Maria
@@ -404,7 +392,7 @@ components:
       properties:
         name:
           type: string
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           minLength: 3
           maxLength: 32
           example: Calcetto
@@ -427,7 +415,7 @@ components:
           type: string
           minLength: 1
           maxLength: 80
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           description: A characters text
       description: A characters text
     Id:
@@ -440,23 +428,7 @@ components:
           description: The id
       description: The id
       example:
-        id:
-          value: 17
-    ListOfUser:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: "#/components/schemas/Id"
-          minItems: 0
-          maxItems: 100
-          description: List of users
-      example:
-        response:
-          users: [10, 187]
-      required: [users]
-      description: List of users
+        value: 17
     User:
       type: object
       properties:
@@ -486,7 +458,7 @@ components:
         content:
           oneOf:
             - type: string
-              pattern: 'ˆ.*?$'
+              pattern: '^.*?$'
               minLength: 0
               maxLength: 160
             - $ref: "#/components/schemas/Image"
@@ -495,18 +467,9 @@ components:
           type: string
           minLength: 0
           maxLength: 80
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           description: Reaction to the message
       description: Message object
-    Group:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/Id"
-        name:
-          $ref: "#/components/schemas/GroupName"
-        picture:
-          $ref: "#/components/schemas/Image"
     Chat:
       type: object
       properties:
@@ -526,9 +489,7 @@ components:
         members:
           type: array
           items:
-            type: integer
-            minimum: 0
-            maximum: 1000
+            $ref: "#/components/schemas/User"
           minItems: 1
           maxItems: 32
           description: members of the chat
@@ -560,11 +521,27 @@ components:
         conversations:
           - chat1
           - chat2
+    UsersCollection:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          minItems: 0
+          maxItems: 100
+          description: Array of users
+      required: [users]
+      description: object array of all users
+      example:
+        users:
+          - user1
+          - user2
     Twozeroresp:
       type: string
       minLength: 1
       maxLength: 100
-      pattern: 'ˆ.*?$'
+      pattern: '^.*?$'
       example: Action executed succesfully
       description: String of information
     Fourzerofourresp:
@@ -572,7 +549,7 @@ components:
       properties:
         trace:
           type: string
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           minLength: 1
           maxLength: 100
           example: Not found
@@ -583,7 +560,7 @@ components:
       properties:
         trace:
           type: string
-          pattern: 'ˆ.*?$'
+          pattern: '^.*?$'
           minLength: 1
           maxLength: 100
           example: Access not permited
@@ -603,7 +580,7 @@ components:
           schema:
             $ref: "#/components/schemas/Chat"
     fourzerofour:
-      description: Resource created
+      description: Resource not found
       content:
         application/json:
           schema:
@@ -614,5 +591,3 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Unauthorizedresp"
-  
-  
