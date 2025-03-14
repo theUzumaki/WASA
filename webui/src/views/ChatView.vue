@@ -309,7 +309,7 @@ export default {
 					</div>
 
                 </div>
-				<div v-if="search" style="position: absolute; left:77%">
+				<div v-if="search" style="position: absolute; left:77%; top:12%;">
 					<div v-for="user in users" :key="user.id">
 						<div v-if="checkPresence(user)">
 						<button v-if="isGroup" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">

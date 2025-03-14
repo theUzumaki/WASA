@@ -21,7 +21,7 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 		return err
 	}
 
-	if i < 2 {
+	if i < 1 {
 		_, err := db.c.Exec("DELETE FROM chats WHERE chatId = ?", chatId)
 		if err != nil {
 			return err
