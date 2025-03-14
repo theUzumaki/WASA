@@ -130,6 +130,10 @@ func New(db *sql.DB) (AppDatabase, error) {
 		if err != nil {
 			return nil, fmt.Errorf("message_user table creation error %w", err)
 		}
+		_, err = db.Exec(message_viewer)
+		if err != nil {
+			return nil, fmt.Errorf("message_viewer table creation error %w", err)
+		}
 	}
 
 	return &appdbimpl{

@@ -124,7 +124,17 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
-
+      put:
+        tags: ["groups operations"]
+        operationId: addToGroup
+        security:
+          - bearerAuth: []
+        summary: joins the group
+        description: |
+          Joins the specified group
+        responses:
+          "200":
+            $ref: "#/components/responses/twohund"
   /users/{id}/groups/{group_id}/name:
     parameters:
         - $ref: "#/components/parameters/user_id"

@@ -11,6 +11,7 @@ var messages = `CREATE TABLE IF NOT EXISTS messages (
 	messageId INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	content TEXT NOT NULL,
+	checkmark BOOLEAN DEFAULT FALSE,
 	PRIMARY KEY (messageId)
 );`
 
@@ -71,6 +72,16 @@ var message_user = `CREATE TABLE IF NOT EXISTS message_user (
 	messageId INTEGER NOT NULL,
 	userId INTEGER NOT NULL,
 	PRIMARY KEY (messageId, userId),
+	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
+	FOREIGN KEY (userId) REFERENCES users(userId)
+		ON DELETE CASCADE
+);`
+
+var message_viewer = `CREATE TABLE IF NOT EXISTS message_viewer (
+	messageId INTEGER NOT NULL,
+	userId INTEGER NOT NULL,
+		PRIMARY KEY (messageId, userId),
 	FOREIGN KEY (messageId) REFERENCES messages(messageId)
 		ON DELETE CASCADE
 	FOREIGN KEY (userId) REFERENCES users(userId)
