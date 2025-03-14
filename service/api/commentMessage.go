@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -12,7 +13,7 @@ func (rt *_router) commentMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	userid := ps.ByName("id")
 	messageid := ps.ByName("message_id")
-	var comm text
+	var comm structs.Text
 
 	err := json.NewDecoder(r.Body).Decode(&comm)
 	if err != nil || messageid == "" || comm.Text == "" {

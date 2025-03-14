@@ -1,0 +1,4 @@
+sudo docker build -t backend:latest -f Dockerfile.backend .
+sudo docker build -t frontend:latest -f Dockerfile.frontend .
+sudo docker run -it --rm -p 3000:3000 backend:latest
+sudo docker run -it --rm -p 8080:80 frontend:latest

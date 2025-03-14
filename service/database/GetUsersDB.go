@@ -1,6 +1,8 @@
 package database
 
-func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
+import "wasatext/service/structs"
+
+func (db *appdbimpl) GetUsers(userName string) ([]structs.User, error) {
 
 	rowsUsers, err := db.c.Query(`SELECT *  
 			FROM users
@@ -9,9 +11,9 @@ func (db *appdbimpl) GetUsers(userName string) ([]User, error) {
 		return nil, err
 	}
 
-	var users []User
+	var users []structs.User
 	for rowsUsers.Next() {
-		var user User
+		var user structs.User
 		if rowsUsers.Err() != nil {
 			return nil, err
 		}

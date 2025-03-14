@@ -1,5 +1,7 @@
 package database
 
+import "wasatext/service/structs"
+
 func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid string) error {
 
 	row := db.c.QueryRow("SELECT MAX(messageId) FROM messages")
@@ -15,7 +17,7 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 		return err
 	}
 
-	var message Message
+	var message structs.Message
 	// Collects all the comments and their senders and stores them
 	/*
 		rows, err := db.c.Query("SELECT users.userId, users.userName, users.picture, comments.commentId, comments.content FROM messages JOIN comment_message ON comment_message.messageId = messages.messageId JOIN comments ON comments.commentId = comment_message.commentId JOIN comment_user ON comments.commentId = comment_user.commentId JOIN users ON users.userId = comment_user.userId WHERE messages.messageId = ?", messageid)

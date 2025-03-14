@@ -34,17 +34,18 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"wasatext/service/structs"
 )
 
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
-	LoginManager(user User) (User, string, error)
+	LoginManager(user structs.User) (structs.User, string, error)
 
 	SetName(id string, newname string) error
 
 	SetMyPhoto(id string, newpicture string) error
 
-	NewChat(id string, chat Chat) (int, error)
+	NewChat(id string, chat structs.Chat) (int, error)
 
 	LeaveGroup(idgroup string, iduser string) error
 
@@ -54,15 +55,15 @@ type AppDatabase interface {
 
 	SetGroupPhoto(id string, newname string) error
 
-	GetUserId(name string) (User, error)
+	GetUserId(name string) (structs.User, error)
 
-	GetUsers(name string) ([]User, error)
+	GetUsers(name string) ([]structs.User, error)
 
-	GetMyConversations(id string) ([]Chat, error)
+	GetMyConversations(id string) ([]structs.Chat, error)
 
-	GetConversation(id string) (Chat, error)
+	GetConversation(id string) (structs.Chat, error)
 
-	SendMessage(message Message) (Chat, error)
+	SendMessage(message structs.Message) (structs.Chat, error)
 
 	ForwardMessage(userid string, messageid string, chatid string) error
 

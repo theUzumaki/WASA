@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -15,7 +16,7 @@ import (
 func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var id = ps.ByName("id")
-	var chat Chat
+	var chat structs.Chat
 	var err error
 
 	if id != ctx.Token {
@@ -45,14 +46,14 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 		chat.Picture = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(imageData)
 	}
 
-	chat_id, err := rt.db.NewChat(id, chat.ApiChatToDB())
+	chat_id, err := rt.db.NewChat(id, chat)
 	if err != nil && err.Error() == "chat already existing" {
 		chatDB, err := rt.db.GetConversation(strconv.Itoa(chat_id))
 		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		chat = (dbChat)(chatDB).DBChatToAPI()
+		chat = chatDB
 	} else if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

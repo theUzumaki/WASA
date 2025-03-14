@@ -1,7 +1,9 @@
 package database
 
-func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
-	var chat Chat
+import "wasatext/service/structs"
+
+func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
+	var chat structs.Chat
 
 	row := db.c.QueryRow(`SELECT *  
 			FROM chats
@@ -33,7 +35,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 	}
 
 	for rowsMembers.Next() {
-		var member User
+		var member structs.User
 		if err := rowsMembers.Err(); err != nil {
 			return chat, err
 		}
@@ -46,7 +48,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 	}
 
 	for rowsMessages.Next() {
-		var message Message
+		var message structs.Message
 		if err := rowsMessages.Err(); err != nil {
 			return chat, err
 		}
@@ -62,8 +64,8 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 			return chat, err
 		}
 		for rows.Next() {
-			var user User
-			var comment Comment
+			var user structs.User
+			var comment structs.Comment
 			if rows.Err() != nil {
 				return chat, err
 			}
@@ -71,7 +73,7 @@ func (db *appdbimpl) GetConversation(chatId string) (Chat, error) {
 			if err != nil {
 				return chat, err
 			}
-			var comm_send CommentSender = CommentSender{
+			var comm_send structs.CommentSender = structs.CommentSender{
 				Sender:  user,
 				Comment: comment,
 			}

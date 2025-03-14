@@ -2,10 +2,11 @@ package database
 
 import (
 	"strconv"
+	"wasatext/service/structs"
 )
 
-func (db *appdbimpl) SendMessage(message Message) (Chat, error) {
-	var chat Chat
+func (db *appdbimpl) SendMessage(message structs.Message) (structs.Chat, error) {
+	var chat structs.Chat
 
 	var stringId string
 	row := db.c.QueryRow("SELECT MAX(messageId) FROM messages")

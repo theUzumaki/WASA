@@ -1,6 +1,6 @@
 module wasatext
 
-go 1.24.1
+go 1.23
 
 require (
 	github.com/ardanlabs/conf v1.5.0 // indirect

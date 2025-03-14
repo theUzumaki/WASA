@@ -5,13 +5,14 @@ import (
 	"errors"
 	"log"
 	"strconv"
+	"wasatext/service/structs"
 )
 
-func (db *appdbimpl) LoginManager(user User) (User, string, error) {
+func (db *appdbimpl) LoginManager(user structs.User) (structs.User, string, error) {
 
 	row := db.c.QueryRow("SELECT * FROM users WHERE userName = ?", user.Name)
 
-	var newuser User
+	var newuser structs.User
 	var id int
 	err := row.Scan(&newuser.Id, &newuser.Name, &newuser.Picture)
 	if !errors.Is(err, sql.ErrNoRows) {

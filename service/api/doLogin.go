@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var user User
+	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	var userName = user.Name
 
@@ -37,20 +38,20 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	user.Picture = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(imageData)
 
-	user = User{
+	user = structs.User{
 		Id:      -1,
 		Name:    userName,
 		Picture: user.Picture,
 	}
 
 	var status string
-	var newuser User
-	dbUser, status, err := rt.db.LoginManager(user.ApiUserToDB())
+	var newuser structs.User
+	dbUser, status, err := rt.db.LoginManager(user)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	newuser = User{
+	newuser = structs.User{
 		Id:      dbUser.Id,
 		Name:    dbUser.Name,
 		Picture: dbUser.Picture,

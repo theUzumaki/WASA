@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -13,7 +14,7 @@ func (rt *_router) addToGroup(w http.ResponseWriter, r *http.Request, ps httprou
 
 	var userid = ps.ByName("id")
 	var chatid = ps.ByName("group_id")
-	var newuser User
+	var newuser structs.User
 	err := json.NewDecoder(r.Body).Decode(&newuser)
 
 	if err != nil || userid == "" || chatid == "" {

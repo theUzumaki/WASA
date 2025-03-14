@@ -3,9 +3,10 @@ package database
 import (
 	"errors"
 	"strconv"
+	"wasatext/service/structs"
 )
 
-func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
+func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 
 	// Checks if already exist a private chat with the same users
 	if chat.Name == "chat" {
@@ -120,7 +121,7 @@ func (db *appdbimpl) NewChat(userId string, chat Chat) (int, error) {
 	// Checks if all users exists
 	for i := 0; i < len(chat.Members); i++ {
 		row := db.c.QueryRow("SELECT * FROM users WHERE userId = ?;", chat.Members[i].Id)
-		var user User
+		var user structs.User
 
 		err := row.Scan(&user.Id, &user.Name, &user.Picture)
 		if err != nil {

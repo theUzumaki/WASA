@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"regexp"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -12,7 +13,7 @@ import (
 func (rt *_router) setName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var id = ps.ByName("id")
-	var user User
+	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if id != ctx.Token {

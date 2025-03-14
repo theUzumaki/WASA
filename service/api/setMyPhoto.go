@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -21,7 +22,7 @@ func (rt *_router) setMyPhoto(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	var user User
+	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -14,7 +15,7 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 
 	var id = ps.ByName("id")
 	var chatid = ps.ByName("chat_id")
-	var message Message
+	var message structs.Message
 
 	if id != ctx.Token || id == "" || chatid == "" {
 		return
@@ -38,7 +39,7 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		http.Error(w, "Invalid sender", http.StatusBadRequest)
 		return
 	}
-	message.Sender = User{
+	message.Sender = structs.User{
 		Id:      sender_id,
 		Name:    r.FormValue("sender_name"),
 		Picture: r.FormValue("sender_pic"),
@@ -51,7 +52,7 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	message.Content = r.FormValue("content")
 
-	chat, err := rt.db.SendMessage(message.ApiMessageToDB())
+	chat, err := rt.db.SendMessage(message)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

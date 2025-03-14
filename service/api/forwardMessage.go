@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -19,7 +20,7 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	var newchatid id
+	var newchatid structs.Id
 
 	err := json.NewDecoder(r.Body).Decode(&newchatid)
 	if err != nil {

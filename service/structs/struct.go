@@ -1,8 +1,16 @@
-package database
+package structs
 
 import (
 	"time"
 )
+
+type Text struct {
+	Text string `json:"content"`
+}
+
+type Id struct {
+	Id string `json:"id"`
+}
 
 type User struct {
 	Id      int    `json:"id"`

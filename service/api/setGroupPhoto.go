@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"wasatext/service/api/reqcontext"
+	"wasatext/service/structs"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -22,7 +23,7 @@ func (rt *_router) setGroupPhoto(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	var chat Chat
+	var chat structs.Chat
 	err := json.NewDecoder(r.Body).Decode(&chat)
 
 	if err != nil {

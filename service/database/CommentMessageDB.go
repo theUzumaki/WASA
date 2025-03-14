@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"strconv"
+	"wasatext/service/structs"
 )
 
 func (db *appdbimpl) CommentMessage(messageid string, comment string, senderid string) error {
 
-	var comm Comment
+	var comm structs.Comment
 	row := db.c.QueryRow("SELECT comment_message.commentId FROM comment_message JOIN comment_user ON comment_message.commentId = comment_user.commentId WHERE comment_message.messageId = ? AND comment_user.userId = ?", messageid, senderid)
 	if err := row.Scan(&comm.Id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
