@@ -87,3 +87,13 @@ var message_viewer = `CREATE TABLE IF NOT EXISTS message_viewer (
 	FOREIGN KEY (userId) REFERENCES users(userId)
 		ON DELETE CASCADE
 );`
+
+var message_reply = `CREATE TABLE IF NOT EXISTS message_reply (
+	messageId INTEGER NOT NULL,
+	replyId INTEGER NOT NULL,
+	PRIMARY KEY (messageId, responseId),
+	FOREIGN KEY (messageId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
+	FOREIGN KEY (replyId) REFERENCES messages(messageId)
+		ON DELETE CASCADE
+);`

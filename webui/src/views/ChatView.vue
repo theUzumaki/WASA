@@ -10,12 +10,13 @@ export default {
 			forward: false,
 			message_operations: false,
 			message: null,
+			reply_id: 0,
 			messages: JSON.parse(sessionStorage.chat).messages
 		}
 	},
 	methods: {
 		isBase64Image(content) {
-			const base64Pattern = /^data:image\/(png|jpg|jpeg);base64,/;
+			const base64Pattern = /^data:image\/(png|jpg|jpeg|gif);base64,/;
 			return base64Pattern.test(content);
 		},
 		triggerFileInput() {
@@ -41,6 +42,7 @@ export default {
 				formData.append('sender_pic', JSON.parse(sessionStorage.user).picture);
                 formData.append('date', new Date().toISOString());
                 formData.append('content', content);
+				formData.append('reply_id', this.reply_id);
 
                 let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+JSON.parse(sessionStorage.chat).id,
 					formData, {
@@ -160,6 +162,7 @@ export default {
 					}
 				})
 				sessionStorage.chat = JSON.stringify(response.data)
+				console.log("chat: ", sessionStorage.chat, "response: ", response.data)
 				this.messages = JSON.parse(sessionStorage.chat).messages
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -295,12 +298,24 @@ export default {
 				<div v-for="message in messages" :key="message.id">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
-						<button @click="setMessage(message)">
+						<button @click="setMessage(message)" style="margin-bottom: 10px;">
 							<div v-if="isBase64Image(message.content)">
 								<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> 
+								<div style="display: inline-block; vertical-align: middle;">
+									<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
+									<div v-if="message.checkmark" style="display: inline-block; vertical-align: top;">
+										<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
+									</div>
+								</div>
 							</div>
 							<div v-else>
 								{{ message.content }}
+								<div style="display: inline-block; vertical-align: middle;">
+									<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
+									<div v-if="message.checkmark" style="display: inline-block; vertical-align: top;">
+										<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
+									</div>
+								</div>
 							</div>
 						</button>
 					</div>
@@ -334,6 +349,9 @@ export default {
 					</div>
 					<div>
 						<button @click="changeSearchState(); forward = true">Forward Message</button>
+					</div>
+					<div>
+						<button @click="reply_id = message.id">Reply</button>
 					</div>
 				</div>
 				<div class="btn-group me-2" >

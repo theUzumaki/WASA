@@ -35,6 +35,8 @@ type Message struct {
 	CommSenders []CommentSender `json:"comm_senders"`
 	Date        time.Time       `json:"date"`
 	Content     string          `json:"content"`
+	Checkmark   bool            `json:"checkmark"`
+	ReplyId     int             `json:"reply_id"`
 }
 
 type Group struct {

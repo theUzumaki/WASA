@@ -61,9 +61,9 @@ type AppDatabase interface {
 
 	GetMyConversations(id string) ([]structs.Chat, error)
 
-	GetConversation(id string) (structs.Chat, error)
+	GetConversation(chatid string, userid string) (structs.Chat, error)
 
-	SendMessage(message structs.Message) (structs.Chat, error)
+	SendMessage(message structs.Message, userid string) (structs.Chat, error)
 
 	ForwardMessage(userid string, messageid string, chatid string) error
 
@@ -133,6 +133,10 @@ func New(db *sql.DB) (AppDatabase, error) {
 		_, err = db.Exec(message_viewer)
 		if err != nil {
 			return nil, fmt.Errorf("message_viewer table creation error %w", err)
+		}
+		_, err = db.Exec(message_reply)
+		if err != nil {
+			return nil, fmt.Errorf("message_reply table creation error %w", err)
 		}
 	}
 

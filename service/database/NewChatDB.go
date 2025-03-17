@@ -67,13 +67,13 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 						return -1, err
 					}
 					if check == 2 && id == chat.Members[0].Id {
-						chat, err := db.GetConversation(chatid)
+						chat, err := db.GetConversation(chatid, userId)
 						if err != nil {
 							return -1, err
 						}
 						return chat.Id, errors.New("chat already existing")
 					} else if check == 1 && id == chat.Members[1].Id {
-						chat, err := db.GetConversation(chatid)
+						chat, err := db.GetConversation(chatid, userId)
 						if err != nil {
 							return -1, err
 						}
@@ -128,45 +128,6 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 			return 0, err
 		}
 	}
-
-	// Checks if already exist a group chat with the same users
-	/*
-		rows, err := db.c.Query("SELECT chatId FROM chats")
-		if err != nil {
-			return 0, err
-		} else {
-			for rows.Next() {
-				var id string
-				err = rows.Scan(&id)
-				if err != nil {
-					return 0, err
-				}
-
-				i := 0
-				for ; i < len(chat.Members); i++ {
-					row = db.c.QueryRow("SELECT * FROM chat_user WHERE userId = ? AND chatId = ?;", userId, id)
-					err = row.Scan(nil, nil, nil)
-					if errors.Is(err, sql.ErrNoRows) {
-						break
-					} else if err != nil {
-						return 0, err
-					}
-				}
-
-				if i == len(chat.Members)-1 {
-					idInt, err := strconv.Atoi(id)
-					if err != nil {
-						return 0, err
-					}
-					return idInt, nil
-				}
-			}
-		}
-		err = rows.Close()
-		if err != nil {
-			return 0, err
-		}
-	*/
 
 	_, err = db.c.Exec("INSERT INTO chats VALUES (?, ?, ?);", chat.Id, chat.Name, chat.Picture)
 	if err != nil {

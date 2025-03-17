@@ -1,14 +1,18 @@
 package database
 
-import "wasatext/service/structs"
+import (
+	"database/sql"
+	"log"
+	"strconv"
+	"wasatext/service/structs"
+)
 
-func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
+func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat, error) {
 	var chat structs.Chat
 
 	row := db.c.QueryRow(`SELECT *  
 			FROM chats
 			WHERE chatId = ?`, chatId)
-
 	if err := row.Scan(&chat.Id, &chat.Name, &chat.Picture); err != nil {
 		return chat, err
 	}
@@ -22,8 +26,9 @@ func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
 	if err != nil {
 		return chat, err
 	}
+
 	rowsMessages, err := db.c.Query(
-		`SELECT	chat_message.messageId, messages.date, messages.content, users.userId, users.userName, users.picture, chats.chatId 
+		`SELECT	chat_message.messageId, messages.date, messages.content, messages.checkmark, users.userId, users.userName, users.picture, chats.chatId 
 		FROM chats
 		JOIN chat_message ON chat_message.chatId = chats.chatId
 		JOIN messages ON chat_message.messageId = messages.messageId
@@ -34,6 +39,7 @@ func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
 		return chat, err
 	}
 
+	var num_members int
 	for rowsMembers.Next() {
 		var member structs.User
 		if err := rowsMembers.Err(); err != nil {
@@ -45,15 +51,22 @@ func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
 			return chat, err
 		}
 		chat.Members = append(chat.Members, member)
+		num_members++
+	}
+	err = rowsMembers.Close()
+	if err != nil {
+		return chat, err
 	}
 
+	var msgs_id1 []string
+	var msgs_id2 []string
 	for rowsMessages.Next() {
 		var message structs.Message
 		if err := rowsMessages.Err(); err != nil {
 			return chat, err
 		}
 
-		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Sender.Id, &message.Sender.Name, &message.Sender.Picture, &message.ChatId)
+		err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Checkmark, &message.Sender.Id, &message.Sender.Name, &message.Sender.Picture, &message.ChatId)
 		if err != nil {
 			return chat, err
 		}
@@ -83,15 +96,47 @@ func (db *appdbimpl) GetConversation(chatId string) (structs.Chat, error) {
 		if err != nil {
 			return chat, err
 		}
+
+		var messid string
+		var usid string
+		err = db.c.QueryRow("SELECT * FROM message_viewer WHERE messageId = ? AND userId = ? LIMIT 1", message.Id, userId).Scan(&messid, &usid)
+		if err != nil && err != sql.ErrNoRows {
+			return chat, err
+		} else if err == sql.ErrNoRows {
+			msgs_id1 = append(msgs_id1, strconv.Itoa(message.Id))
+		}
+
+		var viewers int
+		row = db.c.QueryRow("SELECT COUNT(messageId) FROM message_viewer WHERE messageId = ? AND userId", message.Id, userId)
+		err = row.Scan(&viewers)
+		if err != nil {
+			return chat, err
+		}
+		if viewers == num_members {
+			msgs_id2 = append(msgs_id2, strconv.Itoa(message.Id))
+			message.Checkmark = true
+		}
+
 		chat.Messages = append(chat.Messages, message)
-	}
-	err = rowsMembers.Close()
-	if err != nil {
-		return chat, err
 	}
 	err = rowsMessages.Close()
 	if err != nil {
 		return chat, err
+	}
+
+	for _, id := range msgs_id1 {
+		_, err = db.c.Exec("INSERT INTO message_viewer VALUES (?, ?)", id, userId)
+		if err != nil {
+			log.Default().Println("Error inserting into message_viewer: ", err)
+			return chat, err
+		}
+	}
+
+	for _, id := range msgs_id2 {
+		_, err = db.c.Exec("UPDATE messages SET checkmark = true WHERE messageId = ?", id)
+		if err != nil {
+			log.Default().Println("Error updating checkmark: ", err)
+		}
 	}
 
 	return chat, err

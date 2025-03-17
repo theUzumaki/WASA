@@ -124,17 +124,17 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
-      put:
-        tags: ["groups operations"]
-        operationId: addToGroup
-        security:
-          - bearerAuth: []
-        summary: joins the group
-        description: |
-          Joins the specified group
-        responses:
-          "200":
-            $ref: "#/components/responses/twohund"
+    put:
+      tags: ["groups operations"]
+      operationId: addToGroup
+      security:
+        - bearerAuth: []
+      summary: joins the group
+      description: |
+        Joins the specified group
+      responses:
+        "200":
+          $ref: "#/components/responses/twohund"
   /users/{id}/groups/{group_id}/name:
     parameters:
         - $ref: "#/components/parameters/user_id"
@@ -389,7 +389,7 @@ components:
     UserName:
       type: object
       properties:
-        name:
+        username:
           type: string
           pattern: '^.*?$'
           minLength: 3
@@ -400,7 +400,7 @@ components:
     GroupName:
       type: object
       properties:
-        name:
+        groupname:
           type: string
           pattern: '^.*?$'
           minLength: 3
@@ -413,7 +413,7 @@ components:
       properties:
         name:
           type: string
-          format: binary
+          format: base64
           minLength: 1
           maxLength: 9999
           description: The string in which is written the image file
@@ -484,15 +484,12 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          minimum: 0
-          maximum: 1000
-          description: Chat id
-        name:
+          $ref: "#/components/schemas/Id"
+        chatname:
           type: string
           minLength: 0
           maxLength: 80
-          pattern: ˆ.*?$
+          pattern: '^.*?$'
           description: Name of the conversation
         picture:
           $ref: "#/components/schemas/Image"
@@ -513,7 +510,14 @@ components:
       required: [messages, members]
       example:
         id: 10
-        chat_name: calcetto
+        chatname: calcetto
+        messages:
+          - Message:
+              id: 0
+              content: ciao
+          - Message:
+              id: 1
+              content: tutto bene
       description: Chat object
     ChatCollection:
       type: object
@@ -529,8 +533,12 @@ components:
       description: object array of all chats
       example:
         conversations:
-          - chat1
-          - chat2
+          - Chat:
+              id: 0
+              chatname: calcetto
+          - Chat:
+              id: 1
+              chatname: scuola
     UsersCollection:
       type: object
       properties:
@@ -545,8 +553,12 @@ components:
       description: object array of all users
       example:
         users:
-          - user1
-          - user2
+          - User:
+              id: 0
+              name: Luca
+          - User:
+              id: 1
+              name: Giacomo
     Twozeroresp:
       type: string
       minLength: 1

@@ -48,7 +48,7 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	chat_id, err := rt.db.NewChat(id, chat)
 	if err != nil && err.Error() == "chat already existing" {
-		chatDB, err := rt.db.GetConversation(strconv.Itoa(chat_id))
+		chatDB, err := rt.db.GetConversation(strconv.Itoa(chat_id), id)
 		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return

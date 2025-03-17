@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 
@@ -22,13 +23,13 @@ func (rt *_router) getConversation(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
-	chat, err := rt.db.GetConversation(chatId)
+	chat, err := rt.db.GetConversation(chatId, userId)
 	if err != nil {
+		log.Default().Println(err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("content-type", "application/json")
 	err = json.NewEncoder(w).Encode(chat)
 	if err != nil {
