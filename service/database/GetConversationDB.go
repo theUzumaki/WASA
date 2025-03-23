@@ -107,15 +107,33 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 		}
 
 		var viewers int
-		row = db.c.QueryRow("SELECT COUNT(messageId) FROM message_viewer WHERE messageId = ? AND userId", message.Id, userId)
+		row = db.c.QueryRow("SELECT COUNT(messageId) FROM message_viewer WHERE messageId = ?", message.Id)
 		err = row.Scan(&viewers)
 		if err != nil {
 			return chat, err
 		}
 		if viewers == num_members {
-			msgs_id2 = append(msgs_id2, strconv.Itoa(message.Id))
-			message.Checkmark = true
+			row = db.c.QueryRow("SELECT checkmark FROM messages WHERE messageId = ?", message.Id)
+			err = row.Scan(&message.Checkmark)
+			if err != nil {
+				return chat, err
+			}
+			if !message.Checkmark {
+				msgs_id2 = append(msgs_id2, strconv.Itoa(message.Id))
+				message.Checkmark = true
+			}
 		}
+
+		var replyId int
+		row = db.c.QueryRow("SELECT replyId FROM message_reply WHERE messageId = ? LIMIT 1", message.Id, userId)
+		err = row.Scan(&replyId)
+		if err != nil && err != sql.ErrNoRows {
+			return chat, err
+		} else if err == sql.ErrNoRows {
+			replyId = -1
+		}
+
+		message.ReplyId = replyId
 
 		chat.Messages = append(chat.Messages, message)
 	}

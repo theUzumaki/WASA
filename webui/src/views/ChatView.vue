@@ -10,7 +10,7 @@ export default {
 			forward: false,
 			message_operations: false,
 			message: null,
-			reply_id: 0,
+			reply_id: -1,
 			messages: JSON.parse(sessionStorage.chat).messages
 		}
 	},
@@ -293,12 +293,12 @@ export default {
 <template>
     <div>
 		<h1 style="position: absolute; top: 8%">{{ getChatName() }}</h1>
-        <div class="homescreen">
+		<div class="homescreen">
 			<div class="list-group-item list-group-item-action" style="left: 0px; margin-block-end: 70px;">
 				<div v-for="message in messages" :key="message.id">
 					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
-						<button @click="setMessage(message)" style="margin-bottom: 10px;">
+						<button class="btn" @click="setMessage(message)" style="margin-bottom: 10px;">
 							<div v-if="isBase64Image(message.content)">
 								<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> 
 								<div style="display: inline-block; vertical-align: middle;">
@@ -323,7 +323,7 @@ export default {
 						<span v-for="(comment, index) in getComment(message)" :key="index">{{ comment.sender }} :{{ comment.comment }}<span v-if="index < getComment(message).length - 1">, </span></span>
 					</div>
 
-                </div>
+				</div>
 				<div v-if="search" style="position: absolute; left:77%; top:12%;">
 					<div v-for="user in users" :key="user.id">
 						<div v-if="checkPresence(user)">
@@ -336,44 +336,52 @@ export default {
 						</div>
 					</div>
 				</div>
-				<div v-if="message_operations" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-					<button v-if="checkProperty(message)" @click="deleteMessage()">Delete Message</button><br>
+				<div v-if="message_operations" style="position: absolute; top: 50%; left: 80%; transform: translate(-50%, -50%); background: white; border-radius: 10px;">
+					<button class="btn" v-if="checkProperty(message)" @click="deleteMessage()">Delete Message</button><br>
 					<div v-if="!checkProperty(message)">
-						<button @click="commentMessage('😊')">😊</button>
-						<button @click="commentMessage('😂')">😂</button>
-						<button @click="commentMessage('😢')">😢</button>
-						<button @click="commentMessage('😡')">😡</button>
+						<button class="btn" @click="commentMessage('😊')">😊</button>
+						<button class="btn" @click="commentMessage('😂')">😂</button>
+						<button class="btn" @click="commentMessage('😢')">😢</button>
+						<button class="btn" @click="commentMessage('😡')">😡</button>
 					</div>
 					<div v-if="checkCommentProperty(message)">
-						<button @click="uncommentMessage">Uncomment Message</button>
+						<button class="btn" @click="uncommentMessage">Uncomment Message</button>
 					</div>
 					<div>
-						<button @click="changeSearchState(); forward = true">Forward Message</button>
+						<button class="btn" @click="changeSearchState(); forward = true">Forward Message</button>
 					</div>
 					<div>
-						<button @click="reply_id = message.id">Reply</button>
+						<button class="btn" @click="reply_id = message.id">Reply</button>
 					</div>
 				</div>
 				<div class="btn-group me-2" >
-					<input type="text" class="form-control" placeholder="Type message"
-					v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)" style="position: fixed; bottom: 30px; width: 30%;" >
-					<button @click="triggerFileInput" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
-						Send Image
-					</button>
-					<button @click=leaveGroup() style="position: fixed; bottom: 30px; right: 32%; margin-left: 5%;">
-						Leave group/chat
-					</button>
+					<div style="position: fixed; bottom: 30px; width: 30%;">
+						<div v-if="reply_id != -1" style="display: flex; align-items: center; bottom: 45px;">
+							<button class="btn" @click="reply_id = -1">Cancel Reply</button>
+							<p style="margin-left: 10 px;">Replying to: {{ messages ? messages.find(message => message.id === reply_id)?.content : '' }}</p>
+						</div>
+						<input type="text" class="form-control" placeholder="Type message"
+						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)">
+					</div>
+					<div>
+						<button class="btn" @click="triggerFileInput" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
+							Send Image
+						</button>
+						<button class="btn" @click=leaveGroup() style="position: fixed; bottom: 30px; left: 55%; margin-left: 5%;">
+							Leave group/chat
+						</button>
+					</div>
 					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find user to add"
 					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
-					<button v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; right: 25%; margin-left: 5%;">
+					<button class="btn" v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; left: 70%; margin-left: 5%;">
 						Add to group
 					</button>
-					<button v-if="isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; right: 15%; margin-left: 10px;">
+					<button class="btn" v-if="isGroup" @click="$router.push('/settings')" style="position: fixed; bottom: 30px; left: 85%; margin-left: 10px;">
 						Group Settings
 					</button>
 					<input type="file" ref="fileInput" @change="handleFileUpload" style="display: none;" accept="image/*">
 				</div>
-            </div>
+			</div>
         </div>
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
     </div>

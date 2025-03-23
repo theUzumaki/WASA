@@ -103,7 +103,7 @@ export default {
 
 .homescreen {
 	position: absolute;
-	top: 17%;
+	top: 19%;
 	left: 18%;
 	bottom: 0px;
 	right: 0px;

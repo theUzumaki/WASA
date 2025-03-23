@@ -37,6 +37,13 @@ func (db *appdbimpl) SendMessage(message structs.Message, userId string) (struct
 	if err != nil {
 		return chat, err
 	}
+
+	if message.ReplyId != -1 {
+		_, err = db.c.Exec("INSERT INTO message_reply VALUES (?,?)", message.Id, message.ReplyId)
+		if err != nil {
+			return chat, err
+		}
+	}
 	log.Default().Println("check 4")
 	chat, err = db.GetConversation(strconv.Itoa(message.ChatId), userId)
 	if err != nil {

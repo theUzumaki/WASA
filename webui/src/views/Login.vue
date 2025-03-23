@@ -27,6 +27,7 @@ export default {
         async handleSubmit() {
             try {
                 if (this.username.length < 3 || this.username.length > 16) throw "It has to be between 3 and 16 characters long"
+                if (/\s/.test(this.username)) throw "No whitespaces allowed";
                 let response = await this.$axios.post('/session', {
                     name: this.username,
                 });

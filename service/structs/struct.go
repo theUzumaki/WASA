@@ -36,7 +36,7 @@ type Message struct {
 	Date        time.Time       `json:"date"`
 	Content     string          `json:"content"`
 	Checkmark   bool            `json:"checkmark"`
-	ReplyId     int             `json:"reply_id"`
+	ReplyId     int             `json:"reply_id" default:"-1"`
 }
 
 type Group struct {

@@ -52,6 +52,11 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 	message.Content = r.FormValue("content")
+	message.ReplyId, err = strconv.Atoi(r.FormValue("reply_id"))
+	if err != nil {
+		http.Error(w, "Invalid reply id", http.StatusBadRequest)
+		return
+	}
 
 	chat, err := rt.db.SendMessage(message, id)
 	if err != nil {

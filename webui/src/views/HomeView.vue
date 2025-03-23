@@ -171,7 +171,7 @@ export default {
 						</button> <br>
 					</div>
 				</div>
-				<div v-if="search" style="position: absolute; top: 0px; left:77%">
+				<div v-if="search" style="position: absolute; top: 0px; right:2%">
 					<div v-for="user in users" :key="user.id">
 						<button v-if="user.name != username" type="button" class="btn btn-to-the-right" @click="showGroupForm ? addUserToGroup(user) : newChat([user], null, user.picture)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
