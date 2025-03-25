@@ -414,6 +414,7 @@ components:
         name:
           type: string
           format: base64
+          pattern: '^.*?$'
           minLength: 1
           maxLength: 9999
           description: The string in which is written the image file
@@ -509,14 +510,17 @@ components:
           description: Array of messages
       required: [messages, members]
       example:
-        id: 10
+        id:
+          value: 10
         chatname: calcetto
         messages:
           - Message:
-              id: 0
+              id:
+                value: 0
               content: ciao
           - Message:
-              id: 1
+              id:
+                value: 1
               content: tutto bene
       description: Chat object
     ChatCollection:
@@ -534,11 +538,49 @@ components:
       example:
         conversations:
           - Chat:
-              id: 0
+              id:
+                value: 0
               chatname: calcetto
+              members:
+                - User:
+                    id:
+                      value: 0
+                    name: Maria
+                - User:
+                    id:
+                      value: 1
+                    name: Luigi
+              messages:
+                - Message:
+                    id:
+                      value: 0
+                    content: ciao
+                - Message:
+                    id:
+                      value: 1
+                    content: tutto bene
           - Chat:
-              id: 1
+              id:
+                value: 1
               chatname: scuola
+              members:
+                - User:
+                    id:
+                      value: 0
+                    name: Maria
+                - User:
+                    id:
+                      value: 1
+                    name: Luigi
+              messages:
+                - Message:
+                    id:
+                      value: 0
+                    content: ciao
+                - Message:
+                    id:
+                      value: 1
+                    content: tutto bene
     UsersCollection:
       type: object
       properties:
@@ -554,10 +596,12 @@ components:
       example:
         users:
           - User:
-              id: 0
+              id:
+                value: 0
               name: Luca
           - User:
-              id: 1
+              id:
+                value: 1
               name: Giacomo
     Twozeroresp:
       type: string

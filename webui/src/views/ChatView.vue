@@ -108,6 +108,7 @@ export default {
 				this.forward= false;
 			}
 			else this.message_operations= true;
+			this.search= false;
 			this.message= message;
 			console.log("MESSAGE: ", this.message)
 			console.log(" operations: ", this.message_operations)
@@ -296,9 +297,12 @@ export default {
 		<div class="homescreen">
 			<div class="list-group-item list-group-item-action" style="left: 0px; margin-block-end: 70px;">
 				<div v-for="message in messages" :key="message.id">
-					<div class="message" style="text-align: left; font-size: medium; padding-bottom: 10px;">
+					<div class="message" style="text-align: left; font-size: medium; padding-top: 15px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
-						<button class="btn" @click="setMessage(message)" style="margin-bottom: 10px;">
+						<div v-if="message.reply_id != -1" style="font-size: small; color: gray;">
+							Replying to: {{ messages.find(msg => msg.id === message.reply_id)?.content.slice(0, 32) }}
+						</div>
+						<button class="btn" @click="setMessage(message)">
 							<div v-if="isBase64Image(message.content)">
 								<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> 
 								<div style="display: inline-block; vertical-align: middle;">
@@ -319,8 +323,8 @@ export default {
 							</div>
 						</button>
 					</div>
-					<div>
-						<span v-for="(comment, index) in getComment(message)" :key="index">{{ comment.sender }} :{{ comment.comment }}<span v-if="index < getComment(message).length - 1">, </span></span>
+					<div style="margin-left: 15px; margin-bottom: 10px;">
+						<span v-for="(comment, index) in getComment(message)" :key="index">{{ comment.sender }}:  {{ comment.comment }}<span v-if="index < getComment(message).length - 1">, </span></span>
 					</div>
 
 				</div>
@@ -339,39 +343,38 @@ export default {
 				<div v-if="message_operations" style="position: absolute; top: 50%; left: 80%; transform: translate(-50%, -50%); background: white; border-radius: 10px;">
 					<button class="btn" v-if="checkProperty(message)" @click="deleteMessage()">Delete Message</button><br>
 					<div v-if="!checkProperty(message)">
-						<button class="btn" @click="commentMessage('😊')">😊</button>
-						<button class="btn" @click="commentMessage('😂')">😂</button>
-						<button class="btn" @click="commentMessage('😢')">😢</button>
-						<button class="btn" @click="commentMessage('😡')">😡</button>
+						<button class="btn" @click="commentMessage('😊'); message_operations = false">😊</button>
+						<button class="btn" @click="commentMessage('😂'); message_operations = false">😂</button>
+						<button class="btn" @click="commentMessage('😢'); message_operations = false">😢</button>
+						<button class="btn" @click="commentMessage('😡'); message_operations = false">😡</button>
 					</div>
 					<div v-if="checkCommentProperty(message)">
-						<button class="btn" @click="uncommentMessage">Uncomment Message</button>
+						<button class="btn" @click="uncommentMessage(); message_operations = false">Uncomment Message</button>
 					</div>
 					<div>
-						<button class="btn" @click="changeSearchState(); forward = true">Forward Message</button>
+						<button class="btn" @click="changeSearchState(); forward = true; message_operations = false">Forward Message</button>
 					</div>
 					<div>
-						<button class="btn" @click="reply_id = message.id">Reply</button>
+						<button class="btn" @click="reply_id = message.id; message_operations = false">Reply</button>
 					</div>
 				</div>
 				<div class="btn-group me-2" >
 					<div style="position: fixed; bottom: 30px; width: 30%;">
-						<div v-if="reply_id != -1" style="display: flex; align-items: center; bottom: 45px;">
-							<button class="btn" @click="reply_id = -1">Cancel Reply</button>
-							<p style="margin-left: 10 px;">Replying to: {{ messages ? messages.find(message => message.id === reply_id)?.content : '' }}</p>
-						</div>
+						<button v-if="reply_id != -1" @click="reply_id = -1" type="button" class="btn" style="font-size: small; color: gray; margin-bottom: 5px;">
+							Click to cancel reply: {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }}
+						</button>
 						<input type="text" class="form-control" placeholder="Type message"
 						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)">
 					</div>
 					<div>
-						<button class="btn" @click="triggerFileInput" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
+						<button class="btn" @click="triggerFileInput()" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
 							Send Image
 						</button>
 						<button class="btn" @click=leaveGroup() style="position: fixed; bottom: 30px; left: 55%; margin-left: 5%;">
 							Leave group/chat
 						</button>
 					</div>
-					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find user to add"
+					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find users"
 					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
 					<button class="btn" v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; left: 70%; margin-left: 5%;">
 						Add to group

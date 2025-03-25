@@ -96,8 +96,17 @@ export default {
 			}
 		},
 		async openChat(chat){
-			sessionStorage.chat= JSON.stringify(chat)
-			this.$router.push("/chat");
+			try {
+				let response = await this.$axios.get("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+chat.id, {
+						headers: {
+							"Authorization": JSON.parse(sessionStorage.user).id
+						}
+					})
+				sessionStorage.chat = JSON.stringify(response.data)
+				this.$router.push("/chat");
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
 		},
 		onFileChange(event) {
 			const file = event.target.files[0];
