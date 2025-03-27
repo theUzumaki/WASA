@@ -11,7 +11,8 @@ export default {
 			message_operations: false,
 			message: null,
 			reply_id: -1,
-			messages: JSON.parse(sessionStorage.chat).messages
+			messages: JSON.parse(sessionStorage.chat).messages,
+			members: JSON.parse(sessionStorage.chat).members
 		}
 	},
 	methods: {
@@ -57,50 +58,42 @@ export default {
 				this.errormsg = e.toString();
 			}
 		},
-		async forwardMessage(user) {
+		async forwardMessage(chat) {
 			let chatpic= null
 			let chatname= "chat"
 			
 			try {
-				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
-					name: chatname,
-					members: [{
-						name: JSON.parse(sessionStorage.user).name,
-						id: parseInt(JSON.parse(sessionStorage.user).id),
-						picture: JSON.parse(sessionStorage.user).picture
-					}, {
-						name: user.name,
-						id: user.id,
-						picture: user.picture
-					}],
-					picture: chatpic
+				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+JSON.parse(sessionStorage.chat).id+"/message/"+this.message.id, {
+					id: chat.id.toString()
 				}, {
 					headers: {
 						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
 				let chat_obt = response.data;
-				let formData = new FormData();
-                formData.append('chat_id', chat_obt.id);
-                formData.append('sender_id', JSON.parse(sessionStorage.user).id);
-				formData.append('sender_name', JSON.parse(sessionStorage.user).name);
-				formData.append('sender_pic', JSON.parse(sessionStorage.user).picture);
-                formData.append('date', new Date().toISOString());
-                formData.append('content', this.message.content);
-
-                response = this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+chat_obt.id,
-					formData, {
-                    headers: {
-                        "Authorization": JSON.parse(sessionStorage.user).id,
-                        "Content-Type": "multipart/form-data"
-                    }
-                });
 
 				alert("Message forwarded successfully!");
 
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
+			this.forward= false;
+		},
+		async newChat(user){
+			try {
+				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
+					name: "chat",
+					members: [JSON.parse(sessionStorage.user), user]
+				}, {
+					headers: {
+						"Authorization": JSON.parse(sessionStorage.user).id
+					}
+				});
+				this.forwardMessage(response.data)
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+			this.search= false
 		},
 		setMessage(message){
 			if ( this.message_operations ) {
@@ -184,6 +177,22 @@ export default {
 				this.errormsg = e.toString();
 			}
 		},
+		async getChats(name = ""){
+			this.errormsg = null;
+			try {
+				if (name.length < 1) throw "It has to have at least 1 character"
+				let response = await this.$axios.get("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
+					headers: {
+						"Authorization": JSON.parse(sessionStorage.user).id
+					}
+				});
+				this.chats = response.data.filter(chat => chat.name.startsWith(name) && chat.name != "chat");
+				this.search = true;
+
+			} catch (e) {
+				this.errormsg = e.toString();
+			}
+		},
 		leaveGroup(){
 			try {
 				let response = this.$axios.delete("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id, {
@@ -208,6 +217,7 @@ export default {
 					}
 				})
 				JSON.parse(sessionStorage.chat).members.push(user)
+				this.members = this.members.concat(user)
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -305,7 +315,7 @@ export default {
 						<button class="btn" @click="setMessage(message)">
 							<div v-if="isBase64Image(message.content)">
 								<img :src="`${message.content}`" style="width: 200px; height: 200px; object-fit: cover;"/> 
-								<div style="display: inline-block; vertical-align: middle;">
+								<div v-if=checkProperty(message) style="display: inline-block; vertical-align: middle;">
 									<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
 									<div v-if="message.checkmark" style="display: inline-block; vertical-align: top;">
 										<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
@@ -314,7 +324,7 @@ export default {
 							</div>
 							<div v-else>
 								{{ message.content }}
-								<div style="display: inline-block; vertical-align: middle;">
+								<div v-if=checkProperty(message) style="display: inline-block; vertical-align: middle;">
 									<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
 									<div v-if="message.checkmark" style="display: inline-block; vertical-align: top;">
 										<img src="/svgviewer-output.svg" style="width: 20px; height: 20px;"/>
@@ -328,16 +338,29 @@ export default {
 					</div>
 
 				</div>
-				<div v-if="search" style="position: absolute; left:77%; top:12%;">
+				<div v-if="search" style="position: absolute; right: 5%; top:10%;">
 					<div v-for="user in users" :key="user.id">
 						<div v-if="checkPresence(user)">
-						<button v-if="isGroup" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
+						<button v-if="isGroup && !forward" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button>
-						<button v-else-if="forward" type="button" class="btn btn-to-the-right" @click="forwardMessage(user)">
+						<button v-else-if="forward" type="button" class="btn btn-to-the-right" @click="newChat(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button> <br>
 						</div>
+					</div>
+					<div v-if="forward">
+						<div v-for="chat in chats" :key="chat.id">
+							<button type="button" class="btn btn-to-the-right" @click="forwardMessage(chat)">
+								<img :src="chat.picture" alt="Chat " class="rounded-circle" width="40" height="40"> {{ chat.name }}
+							</button> <br>
+						</div>
+					</div>
+				</div>
+				<div v-else-if="isGroup && !message_operations" style="position: absolute; left: 80%; top: 12%;">
+					<h1 style="font-size: medium;">Members:</h1>
+					<div v-for="user in members" :key="user.id">
+						<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}<br>
 					</div>
 				</div>
 				<div v-if="message_operations" style="position: absolute; top: 50%; left: 80%; transform: translate(-50%, -50%); background: white; border-radius: 10px;">
@@ -361,7 +384,7 @@ export default {
 				<div class="btn-group me-2" >
 					<div style="position: fixed; bottom: 30px; width: 30%;">
 						<button v-if="reply_id != -1" @click="reply_id = -1" type="button" class="btn" style="font-size: small; color: gray; margin-bottom: 5px;">
-							Click to cancel reply: {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }}
+							Click to cancel reply: " {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }} "
 						</button>
 						<input type="text" class="form-control" placeholder="Type message"
 						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)">
@@ -375,7 +398,7 @@ export default {
 						</button>
 					</div>
 					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find users"
-					v-model="searchQuery" @keyup.enter="getUsers(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
+					v-model="searchQuery" @keyup.enter="getUsers(searchQuery) && getChats(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
 					<button class="btn" v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; left: 70%; margin-left: 5%;">
 						Add to group
 					</button>

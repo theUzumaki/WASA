@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"wasatext/service/api/reqcontext"
 	"wasatext/service/structs"
@@ -30,7 +29,6 @@ func (rt *_router) forwardMessage(w http.ResponseWriter, r *http.Request, ps htt
 
 	err = rt.db.ForwardMessage(userid, messageid, newchatid.Id)
 	if err != nil {
-		log.Fatal(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}

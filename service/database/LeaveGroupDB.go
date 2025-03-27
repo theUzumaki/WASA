@@ -26,6 +26,19 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 		if err != nil {
 			return err
 		}
+	} else if i == 1 {
+		row := db.c.QueryRow("SELECT chatName from chats WHERE chatId = ?", chatId)
+		var chatname = ""
+		err = row.Scan(&chatname)
+		if err != nil {
+			return err
+		}
+		if chatname == "chat" {
+			_, err := db.c.Exec("DELETE FROM chats WHERE chatId = ?", chatId)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return err

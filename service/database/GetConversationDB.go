@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"strconv"
 	"wasatext/service/structs"
@@ -100,9 +101,9 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 		var messid string
 		var usid string
 		err = db.c.QueryRow("SELECT * FROM message_viewer WHERE messageId = ? AND userId = ? LIMIT 1", message.Id, userId).Scan(&messid, &usid)
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return chat, err
-		} else if err == sql.ErrNoRows {
+		} else if errors.Is(err, sql.ErrNoRows) {
 			msgs_id1 = append(msgs_id1, strconv.Itoa(message.Id))
 		}
 
@@ -127,9 +128,9 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 		var replyId int
 		row = db.c.QueryRow("SELECT replyId FROM message_reply WHERE messageId = ? LIMIT 1", message.Id, userId)
 		err = row.Scan(&replyId)
-		if err != nil && err != sql.ErrNoRows {
+		if err != nil && !errors.Is(err, sql.ErrNoRows) {
 			return chat, err
-		} else if err == sql.ErrNoRows {
+		} else if errors.Is(err, sql.ErrNoRows) {
 			replyId = -1
 		}
 

@@ -73,7 +73,7 @@ export default {
 						<li class="nav-item">
 							<RouterLink to="/settings" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#layout"/></svg>
-								user settings
+								settings
 							</RouterLink>
 						</li>
 						<li class="nav-item">

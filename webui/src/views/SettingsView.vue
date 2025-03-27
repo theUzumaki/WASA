@@ -53,18 +53,23 @@ export default {
                     })
                     this.$router.push("/chat");
                 } else {
-                    let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/name", {
-                        id: JSON.parse(sessionStorage.user).id,
-                        name: this.username,
-                        picture: this.profilePicture
-                    }, {
-                        headers: {
-                            "Authorization": JSON.parse(sessionStorage.user).id
-                        }
-                    });
+                    if (this.username != '') {                        
+                        let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/name", {
+                            id: JSON.parse(sessionStorage.user).id,
+                            name: this.username,
+                            picture: this.profilePicture
+                        }, {
+                            headers: {
+                                "Authorization": JSON.parse(sessionStorage.user).id
+                            }
+                        });
+                    }
+                    else {
+                        this.username= JSON.parse(sessionStorage.user).name
+                    }
                     let newpic= JSON.parse(sessionStorage.user).picture
                     if (this.profilePicture != null) {
-                        response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
+                        let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/picture", {
                             id: JSON.parse(sessionStorage.user).id,
                             name: this.username,
                             picture: this.profilePicture
@@ -125,17 +130,18 @@ export default {
 
 <template>
     <div class="settings-view">
-        <h1>Settings</h1>
+        <h1 v-if="isGroup">GROUP SETTINGS</h1>
+        <h1 v-else>USER SETTINGS</h1>
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
         <form @submit.prevent="saveSettings">
             <div class="form-group">
                 <div v-if="isGroup">
                     <label for="groupname">Group name:</label>
-                    <input type="text" id="groupname" v-model="groupname" required />
+                    <input type="text" id="groupname" v-model="groupname" />
                 </div>
                 <div v-else>
                     <label for="username">Username:</label>
-                    <input type="text" id="username" v-model="username" required />
+                    <input type="text" id="username" v-model="username" />
                 </div>
             </div>
             <div class="form-group">

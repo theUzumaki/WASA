@@ -24,23 +24,18 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 			if err != nil {
 				return -1, err
 			} else {
-				rows2, err := db.c.Query("SELECT * FROM chat_user WHERE chatId = ?;", chatid)
+				row := db.c.QueryRow("SELECT chatName FROM chats WHERE chatId = ?;", chatid)
+				var name string
+				err := row.Scan(&name)
 				if err != nil {
 					return -1, err
 				}
 
-				count := 0
-				for rows2.Next() {
-					if rows2.Err() != nil {
-						return -1, err
-					}
-					count++
-				}
-				if count != 2 {
+				if name != "chat" {
 					continue
 				}
 
-				rows2, err = db.c.Query("SELECT userId FROM chat_user WHERE chatId = ?;", chatid)
+				rows2, err := db.c.Query("SELECT userId FROM chat_user WHERE chatId = ?;", chatid)
 				if err != nil {
 					return -1, err
 				}
