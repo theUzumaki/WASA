@@ -105,6 +105,8 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 			return chat, err
 		} else if errors.Is(err, sql.ErrNoRows) {
 			msgs_id1 = append(msgs_id1, strconv.Itoa(message.Id))
+		} else if err != nil {
+			return chat, err
 		}
 
 		var viewers int
