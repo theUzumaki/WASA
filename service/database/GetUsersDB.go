@@ -1,6 +1,8 @@
 package database
 
-import "wasatext/service/structs"
+import (
+	"wasatext/service/structs"
+)
 
 func (db *appdbimpl) GetUsers(userName string) ([]structs.User, error) {
 

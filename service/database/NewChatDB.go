@@ -30,7 +30,6 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 				if err != nil {
 					return -1, err
 				}
-
 				if name != "chat" {
 					continue
 				}
@@ -40,7 +39,7 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 					return -1, err
 				}
 				check := 0
-				if rows2.Next() {
+				for rows2.Next() {
 					var id int
 					if rows2.Err() != nil {
 						return -1, err
@@ -49,30 +48,26 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 					if err != nil {
 						return -1, err
 					}
-					if id == chat.Members[0].Id {
-						check = 1
-					} else if id == chat.Members[1].Id {
-						check = 2
-					}
-				}
-				if check != 0 && rows2.Next() {
-					var id int
-					err := rows2.Scan(&id)
-					if err != nil {
-						return -1, err
-					}
-					if check == 2 && id == chat.Members[0].Id {
-						chat, err := db.GetConversation(chatid, userId)
-						if err != nil {
-							return -1, err
+					if check != 0 {
+						if check == 2 && id == chat.Members[0].Id {
+							chat, err := db.GetConversation(chatid, userId)
+							if err != nil {
+								return -1, err
+							}
+							return chat.Id, errors.New("chat already existing")
+						} else if check == 1 && id == chat.Members[1].Id {
+							chat, err := db.GetConversation(chatid, userId)
+							if err != nil {
+								return -1, err
+							}
+							return chat.Id, errors.New("chat already existing")
 						}
-						return chat.Id, errors.New("chat already existing")
-					} else if check == 1 && id == chat.Members[1].Id {
-						chat, err := db.GetConversation(chatid, userId)
-						if err != nil {
-							return -1, err
+					} else {
+						if id == chat.Members[0].Id {
+							check = 1
+						} else if id == chat.Members[1].Id {
+							check = 2
 						}
-						return chat.Id, errors.New("chat already existing")
 					}
 				}
 				err = rows2.Close()
@@ -80,11 +75,10 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 					return 0, err
 				}
 			}
-			err = rows1.Close()
-			if err != nil {
-				return 0, err
-			}
-
+		}
+		err = rows1.Close()
+		if err != nil {
+			return 0, err
 		}
 	}
 

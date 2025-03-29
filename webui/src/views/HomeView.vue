@@ -37,7 +37,6 @@ export default {
 			this.errormsg = null;
 			let chatpic= null
 			let chatname= "chat"
-			console.log("BEFORE: ", userlist)
 			let newmembers= [...userlist]
 			try {
 				newmembers.push({

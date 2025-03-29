@@ -12,7 +12,9 @@ export default {
 			message: null,
 			reply_id: -1,
 			messages: JSON.parse(sessionStorage.chat).messages,
-			members: JSON.parse(sessionStorage.chat).members
+			members: JSON.parse(sessionStorage.chat).members,
+			users: [],
+			chats: [],
 		}
 	},
 	methods: {
@@ -79,11 +81,11 @@ export default {
 			}
 			this.forward= false;
 		},
-		async newChat(user){
+		async newChat(newuser){
 			try {
 				let response = await this.$axios.post("/users/"+JSON.parse(sessionStorage.user).id+"/conversations", {
 					name: "chat",
-					members: [JSON.parse(sessionStorage.user), user]
+					members: [JSON.parse(sessionStorage.user), newuser]
 				}, {
 					headers: {
 						"Authorization": JSON.parse(sessionStorage.user).id
@@ -103,8 +105,6 @@ export default {
 			else this.message_operations= true;
 			this.search= false;
 			this.message= message;
-			console.log("MESSAGE: ", this.message)
-			console.log(" operations: ", this.message_operations)
 		},
 		deleteMessage(){
 			try {
@@ -156,7 +156,7 @@ export default {
 					}
 				})
 				sessionStorage.chat = JSON.stringify(response.data)
-				console.log("chat: ", sessionStorage.chat, "response: ", response.data)
+				console.log("value of forward: ", this.forward, " and search: ", this.search, " and message_op: ", this.message_operations, " and users: ", this.users)
 				this.messages = JSON.parse(sessionStorage.chat).messages
 			} catch (e) {
 				this.errormsg = e.toString();
