@@ -25,7 +25,10 @@ export default {
         },
         async saveSettings() {
             try {
+                this.errormsg = null;
                 if (this.isGroup){
+                    if (this.groupname != '' && (this.groupname.length < 3 || this.groupname.length > 16)) throw "It has to be between 3 and 16 characters long"
+
                     let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/groups/"+JSON.parse(sessionStorage.chat).id+"/name", {
                         name: this.groupname,
                     }, {
@@ -53,6 +56,8 @@ export default {
                     })
                     this.$router.push("/chat");
                 } else {
+                    if (this.username != '' && (this.username.length < 3 || this.username.length > 16)) throw "It has to be between 3 and 16 characters long"
+                    if (/\s/.test(this.username)) throw "No whitespaces allowed";
                     if (this.username != '') {                        
                         let response = await this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/name", {
                             id: JSON.parse(sessionStorage.user).id,
@@ -114,7 +119,6 @@ export default {
         }
     },
     beforeRouteEnter(to, from, next) {
-        console.log("BEFORE ROUTE")
         if (from.path === '/chat') {
             next(vm => {
                 vm.checkGroup();

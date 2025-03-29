@@ -39,6 +39,8 @@ export default {
 			let chatname= "chat"
 			let newmembers= [...userlist]
 			try {
+				if (groupname && (groupname.length < 3 || groupname.length > 16)) throw "It has to be between 3 and 16 characters long"
+
 				newmembers.push({
 					name: JSON.parse(sessionStorage.user).name,
 					id: parseInt(JSON.parse(sessionStorage.user).id),
@@ -62,7 +64,6 @@ export default {
 				sessionStorage.chat= JSON.stringify(response.data);
 				this.$router.push("/chat");
 			} catch (e) {
-				console.log(e.toString())
 				this.errormsg = e.toString();
 			}
 		},
@@ -117,6 +118,13 @@ export default {
 			};
 
 			reader.readAsDataURL(file);
+		},
+		validateGroupName() {
+			if (this.groupName.length < 3 || this.groupName.length > 16) {
+				this.groupNameError = "It has to be between 3 and 16 characters long";
+			} else {
+				this.groupNameError = null;
+			}
 		},
 		displayMemberName(chat) {
 			if (chat.name == "chat") {
@@ -190,7 +198,8 @@ export default {
 				<div v-if="showGroupForm" class="group-form" style="position: relative; top: 75px; width: 30%;">
 					<div class="form-group">
 						<label for="groupName">Group Name</label>
-						<input type="text" class="form-control" id="groupName" v-model="groupName">
+						<input type="text" class="form-control" id="groupName" v-model="groupName" @input="validateGroupName">
+						<small v-if="groupNameError" class="text-danger">{{ groupNameError }}</small>
 						<br>
 					</div>
 					<div class="form-group">

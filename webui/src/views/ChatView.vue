@@ -80,6 +80,8 @@ export default {
 				this.errormsg = e.toString();
 			}
 			this.forward= false;
+			this.search= false;
+			this.message_operations= false;
 		},
 		async newChat(newuser){
 			try {
@@ -371,7 +373,7 @@ export default {
 						</div>
 					</div>
 				</div>
-				<div v-else-if="isGroup && !message_operations" style="position: absolute; left: 80%; top: 12%;">
+				<div v-else-if="isGroup && !message_operations" style="position: absolute; left: 80%; top: 0px;">
 					<h1 style="font-size: medium;">Members:</h1>
 					<div v-for="user in members" :key="user.id">
 						<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}<br>
@@ -401,7 +403,7 @@ export default {
 							Click to cancel reply: " {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }} "
 						</button>
 						<input type="text" class="form-control" placeholder="Type message"
-						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent)">
+						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent); newMessageContent = '';">
 					</div>
 					<div>
 						<button class="btn" @click="triggerFileInput()" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">

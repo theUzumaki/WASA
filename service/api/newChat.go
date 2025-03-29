@@ -47,6 +47,7 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	chat_id, err := rt.db.NewChat(id, chat)
+
 	if err != nil && err.Error() == "chat already existing" {
 		chatDB, err := rt.db.GetConversation(strconv.Itoa(chat_id), id)
 		if err != nil {
@@ -54,6 +55,9 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 			return
 		}
 		chat = chatDB
+	} else if err != nil && err.Error() == "chat name invalid" {
+		http.Error(w, "Invalid name", http.StatusBadRequest)
+		return
 	} else if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

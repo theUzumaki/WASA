@@ -32,6 +32,10 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 		} else {
 			// No existing chat found, continue with creating a new one
 		}
+	} else if len(chat.Name) > 32 {
+		return 0, errors.New("chat name invalid")
+	} else if len(chat.Name) < 3 {
+		return 0, errors.New("chat name invalid")
 	}
 
 	// Retrieves max id
