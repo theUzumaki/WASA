@@ -10,75 +10,27 @@ func (db *appdbimpl) NewChat(userId string, chat structs.Chat) (int, error) {
 
 	// Checks if already exist a private chat with the same users
 	if chat.Name == "chat" {
-		rows1, err := db.c.Query("SELECT chatId FROM chats;")
-		if err != nil {
-			return -1, err
-		}
-		for rows1.Next() {
-			var chatid string
-			if rows1.Err() != nil {
-				return -1, err
-			}
-
-			err = rows1.Scan(&chatid)
+		query := `
+			SELECT c.chatId
+			FROM chats c
+			JOIN chat_user cu1 ON c.chatId = cu1.chatId
+			JOIN chat_user cu2 ON c.chatId = cu2.chatId
+			WHERE c.chatName = 'chat' AND 
+				  ((cu1.userId = ? AND cu2.userId = ?) OR (cu1.userId = ? AND cu2.userId = ?))
+			GROUP BY c.chatId
+		`
+		var chatid int
+		err := db.c.QueryRow(query, chat.Members[0].Id, chat.Members[1].Id, chat.Members[1].Id, chat.Members[0].Id).Scan(&chatid)
+		if err == nil {
+			existingChat, err := db.GetConversation(strconv.Itoa(chatid), userId)
 			if err != nil {
 				return -1, err
-			} else {
-				row := db.c.QueryRow("SELECT chatName FROM chats WHERE chatId = ?;", chatid)
-				var name string
-				err := row.Scan(&name)
-				if err != nil {
-					return -1, err
-				}
-				if name != "chat" {
-					continue
-				}
-
-				rows2, err := db.c.Query("SELECT userId FROM chat_user WHERE chatId = ?;", chatid)
-				if err != nil {
-					return -1, err
-				}
-				check := 0
-				for rows2.Next() {
-					var id int
-					if rows2.Err() != nil {
-						return -1, err
-					}
-					err := rows2.Scan(&id)
-					if err != nil {
-						return -1, err
-					}
-					if check != 0 {
-						if check == 2 && id == chat.Members[0].Id {
-							chat, err := db.GetConversation(chatid, userId)
-							if err != nil {
-								return -1, err
-							}
-							return chat.Id, errors.New("chat already existing")
-						} else if check == 1 && id == chat.Members[1].Id {
-							chat, err := db.GetConversation(chatid, userId)
-							if err != nil {
-								return -1, err
-							}
-							return chat.Id, errors.New("chat already existing")
-						}
-					} else {
-						if id == chat.Members[0].Id {
-							check = 1
-						} else if id == chat.Members[1].Id {
-							check = 2
-						}
-					}
-				}
-				err = rows2.Close()
-				if err != nil {
-					return 0, err
-				}
 			}
-		}
-		err = rows1.Close()
-		if err != nil {
-			return 0, err
+			return existingChat.Id, errors.New("chat already existing")
+		} else if err.Error() != "sql: no rows in result set" {
+			return -1, err
+		} else {
+			// No existing chat found, continue with creating a new one
 		}
 	}
 

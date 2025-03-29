@@ -25,6 +25,8 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 	if err != nil {
 		return err
 	}
+	defer func() { err = rows.Close() }()
+
 	for rows.Next() {
 		var user structs.User
 		var comment structs.Comment
@@ -37,10 +39,6 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 			Comment: comment,
 		}
 		message.CommSenders = append(message.CommSenders, comm_send)
-	}
-	err = rows.Close()
-	if err != nil {
-		return err
 	}
 
 	row = db.c.QueryRow("SELECT * FROM messages WHERE messageId = ?;", messageid)

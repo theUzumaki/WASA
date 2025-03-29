@@ -12,6 +12,7 @@ func (db *appdbimpl) GetUsers(userName string) ([]structs.User, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() { err = rowsUsers.Close() }()
 
 	var users []structs.User
 	for rowsUsers.Next() {
@@ -25,11 +26,6 @@ func (db *appdbimpl) GetUsers(userName string) ([]structs.User, error) {
 			return nil, err
 		}
 		users = append(users, user)
-	}
-
-	err = rowsUsers.Close()
-	if err != nil {
-		return users, err
 	}
 
 	return users, err

@@ -11,7 +11,7 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { err = rows.Close() }()
 
 	var i int = 0
 	for rows.Next() {

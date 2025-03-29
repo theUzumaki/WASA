@@ -13,6 +13,7 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]structs.Chat, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() { err = rowsChat.Close() }()
 
 	var chats []structs.Chat
 	for rowsChat.Next() {
@@ -42,6 +43,8 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]structs.Chat, error) {
 		if err != nil {
 			return nil, err
 		}
+		defer func() { err = rowsMembers.Close() }()
+
 		rowsMessages, err := db.c.Query(
 			`SELECT	chat_message.messageId, messages.date, messages.content, users.userId, users.userName, users.picture, chats.chatId 
 			FROM chats
@@ -53,6 +56,7 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]structs.Chat, error) {
 		if err != nil {
 			return nil, err
 		}
+		defer func() { err = rowsMessages.Close() }()
 
 		for rowsMembers.Next() {
 			var member structs.User
@@ -83,6 +87,8 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]structs.Chat, error) {
 			if err != nil {
 				return nil, err
 			}
+			defer func() { err = rows.Close() }()
+
 			for rows.Next() {
 				var user structs.User
 				var comment structs.Comment
@@ -99,26 +105,11 @@ func (db *appdbimpl) GetMyConversations(userId string) ([]structs.Chat, error) {
 				}
 				message.CommSenders = append(message.CommSenders, comm_send)
 			}
-			err = rows.Close()
-			if err != nil {
-				return nil, err
-			}
+
 			chat.Messages = append(chat.Messages, message)
-		}
-		err = rowsMembers.Close()
-		if err != nil {
-			return nil, err
-		}
-		err = rowsMessages.Close()
-		if err != nil {
-			return nil, err
 		}
 
 		chats = append(chats, chat)
-	}
-	err = rowsChat.Close()
-	if err != nil {
-		return chats, err
 	}
 
 	return chats, err

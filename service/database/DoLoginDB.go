@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"log"
 	"strconv"
 	"wasatext/service/structs"
 )
@@ -21,7 +20,6 @@ func (db *appdbimpl) LoginManager(user structs.User) (structs.User, string, erro
 		newuser.Name = user.Name
 		newuser.Picture = user.Picture
 	} else if err != nil {
-		log.Println(err.Error())
 		return newuser, "", err
 	}
 

@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"log"
 	"wasatext/service/structs"
 )
 
@@ -19,7 +18,6 @@ func (db *appdbimpl) SetName(id string, newname string) error {
 			return err
 		}
 	} else {
-		log.Println("CHECK")
 		return errors.New("already taken")
 	}
 

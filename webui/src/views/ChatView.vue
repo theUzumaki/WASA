@@ -156,7 +156,6 @@ export default {
 					}
 				})
 				sessionStorage.chat = JSON.stringify(response.data)
-				console.log("value of forward: ", this.forward, " and search: ", this.search, " and message_op: ", this.message_operations, " and users: ", this.users)
 				this.messages = JSON.parse(sessionStorage.chat).messages
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -171,7 +170,10 @@ export default {
 						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
-				this.users = response.data;
+				if (response.data == null) this.users= []
+				else {
+					this.users = response.data.filter(user => user.id != JSON.parse(sessionStorage.user).id);
+				}
 				this.search = true;
 			} catch (e) {
 				this.errormsg = e.toString();
@@ -186,7 +188,11 @@ export default {
 						"Authorization": JSON.parse(sessionStorage.user).id
 					}
 				});
-				this.chats = response.data.filter(chat => chat.name.startsWith(name) && chat.name != "chat");
+				console.log(response.data)
+				if (response.data == null) this.chats= []
+				else {
+					this.chats = response.data.filter(chat => chat.name.startsWith(name) && chat.name != "chat" && chat.id != JSON.parse(sessionStorage.chat).id);
+				}
 				this.search = true;
 
 			} catch (e) {
@@ -283,8 +289,14 @@ export default {
     		}
     	},
 		changeSearchState(){
-			if (this.search == true) this.search= false;
-			else this.search= true;
+			if (this.search) {
+				if (this.forward) {
+					this.search= true;
+					this.forward= false;
+				} else this.search= false;
+			} else this.search= true;
+			this.users= [];
+			this.chats= [];
 			return this.search;
 		}
 	},
@@ -339,8 +351,9 @@ export default {
 
 				</div>
 				<div v-if="search" style="position: absolute; right: 5%; top:10%;">
+					<h1 style="font-size: medium;">Users:</h1>
 					<div v-for="user in users" :key="user.id">
-						<div v-if="checkPresence(user)">
+						<div v-if="checkPresence(user) || (isGroup && forward)">
 						<button v-if="isGroup && !forward" type="button" class="btn btn-to-the-right" @click="addToGroup(user)">
 							<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}
 						</button>
@@ -350,6 +363,7 @@ export default {
 						</div>
 					</div>
 					<div v-if="forward">
+						<h1 style="font-size: medium;">Groups:</h1>
 						<div v-for="chat in chats" :key="chat.id">
 							<button type="button" class="btn btn-to-the-right" @click="forwardMessage(chat)">
 								<img :src="chat.picture" alt="Chat " class="rounded-circle" width="40" height="40"> {{ chat.name }}
@@ -398,7 +412,7 @@ export default {
 						</button>
 					</div>
 					<input v-if="search && (isGroup || forward)" type="text" class="form-control" placeholder="Find users"
-					v-model="searchQuery" @keyup.enter="getUsers(searchQuery) && getChats(searchQuery)" style="position: fixed; top: 80px; left: 80%; width: 15%">
+						v-model="searchQuery" @keyup.enter="getUsers(searchQuery); getChats(searchQuery); searchQuery = ''" style="position: fixed; top: 80px; left: 80%; width: 15%">
 					<button class="btn" v-if="isGroup" @click="changeSearchState()" style="position: fixed; bottom: 30px; left: 70%; margin-left: 5%;">
 						Add to group
 					</button>
