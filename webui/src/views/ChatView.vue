@@ -324,7 +324,14 @@ export default {
 					<div class="message" style="text-align: left; font-size: medium; padding-top: 15px;">
 						<img :src="message.sender.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ message.sender.name }}:<br>
 						<div v-if="message.reply_id != -1" style="font-size: small; color: gray;">
-							Replying to: {{ messages.find(msg => msg.id === message.reply_id)?.content.slice(0, 32) }}
+							Replying to:
+							<span v-if="isBase64Image(messages.find(msg => msg.id === message.reply_id)?.content)">
+								<br>
+								<img :src="messages.find(msg => msg.id === message.reply_id)?.content" style="width: 100px; height: 100px; object-fit: cover;" />
+							</span>
+							<span v-else style="margin-left: 4px;"> 
+								" {{ messages.find(msg => msg.id === message.reply_id)?.content.slice(0, 32) }} "
+							</span>
 						</div>
 						<button class="btn" @click="setMessage(message)">
 							<div v-if="isBase64Image(message.content)">
@@ -379,7 +386,7 @@ export default {
 						<img :src="user.picture" alt="User Profile" class="rounded-circle" width="40" height="40"> {{ user.name }}<br>
 					</div>
 				</div>
-				<div v-if="message_operations" style="position: absolute; top: 50%; left: 80%; transform: translate(-50%, -50%); background: white; border-radius: 10px;">
+				<div v-if="message_operations" style="position: fixed; top: 25%; left: 80%; transform: translate(-50%, -50%); background: white; border-radius: 10px;">
 					<button class="btn" v-if="checkProperty(message)" @click="deleteMessage()">Delete Message</button><br>
 					<div v-if="!checkProperty(message)">
 						<button class="btn" @click="commentMessage('😊'); message_operations = false">😊</button>
@@ -398,12 +405,19 @@ export default {
 					</div>
 				</div>
 				<div class="btn-group me-2" >
-					<div style="position: fixed; bottom: 30px; width: 30%;">
+					<div style="position: fixed; bottom: 30px; width: 30%; background: white;">
 						<button v-if="reply_id != -1" @click="reply_id = -1" type="button" class="btn" style="font-size: small; color: gray; margin-bottom: 5px;">
-							Click to cancel reply: " {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }} "
+							Click to cancel reply: 
+							<span v-if="isBase64Image(messages.find(msg => msg.id === reply_id)?.content)">
+								<br> <br>
+								<img :src="messages.find(msg => msg.id === reply_id)?.content" style="width: 80px; height: 80px;" />
+							</span>
+							<span v-else>
+								" {{ messages.find(msg => msg.id === reply_id)?.content.slice(0, 32) }} "
+							</span>
 						</button>
 						<input type="text" class="form-control" placeholder="Type message"
-						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent); newMessageContent = '';">
+						v-model="newMessageContent" @keyup.enter="newMessage(newMessageContent); newMessageContent = ''; reply_id = -1">
 					</div>
 					<div>
 						<button class="btn" @click="triggerFileInput()" style="position: fixed; bottom: 30px; left: 50%; margin-left: 10px;">
