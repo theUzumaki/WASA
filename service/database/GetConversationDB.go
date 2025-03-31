@@ -27,6 +27,10 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 	defer func() { err = rowsMembers.Close() }()
 
 	for rowsMembers.Next() {
+		rowsMembers.err != nil {
+			return chat, err
+		}
+
 		var member structs.User
 		if err := rowsMembers.Scan(&member.Id, &member.Name, &member.Picture); err != nil {
 			return chat, err
@@ -56,6 +60,10 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 	var msgsToUpdateCheckmark []string
 
 	for rowsMessages.Next() {
+		if rowsMessages.Err() != nil {
+			return chat, err
+		}
+
 		var message structs.Message
 		var viewers int
 		if err := rowsMessages.Scan(&message.Id, &message.Date, &message.Content, &message.Checkmark,
@@ -77,6 +85,10 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 		defer func() { err = rowsComments.Close() }()
 
 		for rowsComments.Next() {
+			if rowsComments.Err() != nil {
+				return chat, err
+			}
+			
 			var user structs.User
 			var comment structs.Comment
 			if err := rowsComments.Scan(&user.Id, &user.Name, &user.Picture, &comment.Id, &comment.Content); err != nil {

@@ -28,6 +28,9 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
+		if rows.err != nil {
+			return rows.err
+		}
 		var user structs.User
 		var comment structs.Comment
 		err = rows.Scan(&user.Id, &user.Name, &user.Picture, &comment.Id, &comment.Content)
