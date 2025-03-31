@@ -16,9 +16,9 @@ func (db *appdbimpl) LeaveGroup(chatId string, userId string) error {
 	var i int = 0
 	for rows.Next() {
 		i++
-	}
-	if err := rows.Err(); err != nil {
-		return err
+		if err := rows.Err(); err != nil {
+			return err
+		}
 	}
 
 	if i < 1 {

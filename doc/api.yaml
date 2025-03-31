@@ -32,7 +32,6 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserName"
-
         required: true
       responses:
         '201':
@@ -78,11 +77,11 @@ paths:
         Gets a picture from query and changes the actual picture to the one
         sent
       requestBody:
-        description: the new picture
+        description: the user with the new picture
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Image"
+              $ref: "#/components/schemas/User"
         required: true
       responses:
         "200":
@@ -173,11 +172,11 @@ paths:
       description: |
         changes the group photo based on the request body input
       requestBody:
-        description: Photo to change
+        description: The chat with the new picture
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Image"
+              $ref: "#/components/schemas/Chat"
         required: true
       responses:
         "201":
@@ -411,7 +410,7 @@ components:
     Image:
       type: object
       properties:
-        name:
+        picture:
           type: string
           format: base64
           pattern: '^.*?$'
@@ -422,7 +421,7 @@ components:
     Text:
       type: object
       properties:
-        content:
+        body:
           type: string
           minLength: 1
           maxLength: 80
@@ -522,6 +521,15 @@ components:
               id:
                 value: 1
               content: tutto bene
+        members:
+          - User:
+              id:
+                value: 0
+              name: Maria
+          - User:
+              id:
+                value: 1
+              name: Luigi
       description: Chat object
     ChatCollection:
       type: object
@@ -537,50 +545,48 @@ components:
       description: object array of all chats
       example:
         conversations:
-          - Chat:
-              id:
-                value: 0
-              chatname: calcetto
-              members:
-                - User:
-                    id:
-                      value: 0
-                    name: Maria
-                - User:
-                    id:
-                      value: 1
-                    name: Luigi
-              messages:
-                - Message:
-                    id:
-                      value: 0
-                    content: ciao
-                - Message:
-                    id:
-                      value: 1
-                    content: tutto bene
-          - Chat:
-              id:
-                value: 1
-              chatname: scuola
-              members:
-                - User:
-                    id:
-                      value: 0
-                    name: Maria
-                - User:
-                    id:
-                      value: 1
-                    name: Luigi
-              messages:
-                - Message:
-                    id:
-                      value: 0
-                    content: ciao
-                - Message:
-                    id:
-                      value: 1
-                    content: tutto bene
+          - id:
+              value: 0
+            chatname: calcetto
+            members:
+              - User:
+                  id:
+                    value: 0
+                  name: Maria
+              - User:
+                  id:
+                    value: 1
+                  name: Luigi
+            messages:
+              - Message:
+                  id:
+                    value: 0
+                  content: ciao
+              - Message:
+                  id:
+                    value: 1
+                  content: tutto bene
+          - id:
+              value: 1
+            chatname: scuola
+            members:
+              - User:
+                  id:
+                    value: 0
+                  name: Maria
+              - User:
+                  id:
+                    value: 1
+                  name: Luigi
+            messages:
+              - Message:
+                  id:
+                    value: 0
+                  content: ciao
+              - Message:
+                  id:
+                    value: 1
+                  content: tutto bene
     UsersCollection:
       type: object
       properties:

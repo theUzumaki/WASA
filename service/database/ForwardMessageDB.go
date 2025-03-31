@@ -28,8 +28,8 @@ func (db *appdbimpl) ForwardMessage(userid string, messageid string, chatid stri
 	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
-		if rows.err != nil {
-			return rows.err
+		if rows.Err() != nil {
+			return rows.Err()
 		}
 		var user structs.User
 		var comment structs.Comment

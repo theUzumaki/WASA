@@ -27,8 +27,8 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 	defer func() { err = rowsMembers.Close() }()
 
 	for rowsMembers.Next() {
-		rowsMembers.err != nil {
-			return chat, err
+		if rowsMembers.Err() != nil {
+			return chat, rowsMembers.Err()
 		}
 
 		var member structs.User
@@ -61,7 +61,7 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 
 	for rowsMessages.Next() {
 		if rowsMessages.Err() != nil {
-			return chat, err
+			return chat, rowsMessages.Err()
 		}
 
 		var message structs.Message
@@ -86,7 +86,7 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 
 		for rowsComments.Next() {
 			if rowsComments.Err() != nil {
-				return chat, err
+				return chat, rowsComments.Err()
 			}
 			
 			var user structs.User

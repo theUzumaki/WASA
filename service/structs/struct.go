@@ -5,7 +5,7 @@ import (
 )
 
 type Text struct {
-	Text string `json:"content"`
+	Text string `json:"body"`
 }
 
 type Id struct {

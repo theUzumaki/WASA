@@ -125,7 +125,7 @@ export default {
 			try {
 				if (this.message.sender.id == JSON.parse(sessionStorage.user).id) throw "You can not comment your own messages"
 				let response = this.$axios.put("/users/"+JSON.parse(sessionStorage.user).id+"/conversations/"+JSON.parse(sessionStorage.chat).id+"/message/"+this.message.id+"/comment", {
-					content: emoji
+					body: emoji
 				}, {
 					headers: {
 						"Authorization": JSON.parse(sessionStorage.user).id
