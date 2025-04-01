@@ -88,7 +88,7 @@ func (db *appdbimpl) GetConversation(chatId string, userId string) (structs.Chat
 			if rowsComments.Err() != nil {
 				return chat, rowsComments.Err()
 			}
-			
+
 			var user structs.User
 			var comment structs.Comment
 			if err := rowsComments.Scan(&user.Id, &user.Name, &user.Picture, &comment.Id, &comment.Content); err != nil {
