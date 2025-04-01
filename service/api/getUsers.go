@@ -16,7 +16,7 @@ func (rt *_router) getUsers(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	username := ps.ByName("name")
+	username := ps.ByName("searchquery")
 
 	if username == "" {
 		http.Error(w, "Bad request", http.StatusBadRequest)

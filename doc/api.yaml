@@ -87,10 +87,10 @@ paths:
         "200":
           $ref: "#/components/responses/twohund"
 
-  /users/{id}/search/{name}:
+  /users/{id}/search/{searchquery}:
     parameters:
       - $ref: "#/components/parameters/user_id"
-      - $ref: "#/components/parameters/name"
+      - $ref: "#/components/parameters/searchquery"
     get:
       tags: ["users operations"]
       operationId: getUsers
@@ -373,8 +373,8 @@ components:
       schema:
         $ref: "#/components/schemas/Id"
       description: identifier
-    name:
-      name: name
+    searchquery:
+      name: searchquery
       in: path
       required: true
       schema:
@@ -383,7 +383,8 @@ components:
         minLength: 1
         maxLength: 32
         example: Luigi
-        description: identifier    
+        description: Text containing the name of a user
+      description: name identifier  
   schemas:
     UserName:
       type: object
@@ -444,10 +445,11 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/Id"
-        name:
+        usrname:
           $ref: "#/components/schemas/UserName"
         picture:
           $ref: "#/components/schemas/Image"
+      description: User object
     Message:
       type: object
       properties:
