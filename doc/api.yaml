@@ -621,7 +621,7 @@ components:
     Fourzerofourresp:
       type: object
       properties:
-        trace:
+        trace_four:
           type: string
           pattern: '^.*?$'
           minLength: 1
@@ -632,7 +632,7 @@ components:
     Unauthorizedresp:
       type: object
       properties:
-        trace:
+        trace_unauth:
           type: string
           pattern: '^.*?$'
           minLength: 1
