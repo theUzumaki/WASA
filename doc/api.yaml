@@ -411,7 +411,7 @@ components:
     Image:
       type: object
       properties:
-        picture:
+        file_encode:
           type: string
           format: base64
           pattern: '^.*?$'
