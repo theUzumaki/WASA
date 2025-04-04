@@ -6,6 +6,7 @@ export default {
 			errormsg: null,
 			loading: false,
 			chats: null,
+			sortedChats: null,
 			users: null,
 			search: false,
 			showGroupForm: false,
@@ -91,6 +92,13 @@ export default {
 					}
 				});
 				this.chats = response.data;
+				if (this.chats != null) {
+					this.sortedChats = this.chats.sort((a, b) => {
+						const dateA = a.messages[a.messages.length - 1] ? new Date(a.messages[a.messages.length - 1].date) : new Date(0);
+						const dateB = b.messages[b.messages.length - 1] ? new Date(b.messages[b.messages.length - 1].date) : new Date(0);
+						return dateB - dateA;
+					});
+				}
 			} catch (e) {
 				this.errormsg = e.toString();
 			}
@@ -135,6 +143,13 @@ export default {
 				}
 			} else {
 				return chat.name
+			}
+		},
+		displaySenderName(message){
+			if (message.sender == JSON.parse(sessionStorage.user).id) {
+				return "You"
+			} else {
+				return message.sender.name
 			}
 		},
 		displayChatPic(chat){
@@ -182,9 +197,15 @@ export default {
 			<h1 class="h2">Home page</h1>
 			<div class= "homescreen">
 				<div v-if= "showGroupForm == false">
-					<div v-for="chat in chats" :key="chat.id" style="position: relative">
+					<div v-for="chat in sortedChats" :key="chat.id" style="position: relative">
 						<button type="button" class="btn" @click="openChat(chat)">
-							<img :src=displayChatPic(chat) alt="User Profile" class="rounded-circle" width="40" height="40"> {{ displayMemberName(chat) }}
+							<img :src="displayChatPic(chat)" alt="User Profile" class="rounded-circle" width="40" height="40">
+							<div>{{ displayMemberName(chat) }}</div>
+							<div v-if="chat.messages!=null" style="display: inline-block; text-align: left; margin-left: 10px;">
+								<small v-if="chat.messages[chat.messages.length - 1]" class="text-muted">
+									{{ displaySenderName(chat.messages[chat.messages.length - 1]) }} - {{ chat.messages[chat.messages.length - 1].content.slice(0,32) }} - {{ new Date(chat.messages[chat.messages.length - 1].date).toLocaleString() }}
+								</small>
+							</div>
 						</button> <br>
 					</div>
 				</div>
