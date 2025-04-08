@@ -25,7 +25,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var valid = regexp.MustCompile("^.*?$").MatchString(userName)
 	if !valid {
-		http.Error(w, "Username not valid", http.StatusExpectationFailed)
+		http.Error(w, "Username not valid", http.StatusBadRequest)
 		return
 	}
 

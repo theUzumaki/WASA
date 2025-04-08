@@ -31,7 +31,7 @@ func (rt *_router) setGroupName(w http.ResponseWriter, r *http.Request, ps httpr
 
 	var valid = regexp.MustCompile("^.*?$").MatchString(name.Name)
 	if !valid {
-		http.Error(w, "Groupname not valid", http.StatusExpectationFailed)
+		http.Error(w, "Groupname not valid", http.StatusBadRequest)
 		return
 	}
 

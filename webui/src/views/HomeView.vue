@@ -92,10 +92,11 @@ export default {
 					}
 				});
 				this.chats = response.data;
+				this.sortedChats = null;
 				if (this.chats != null) {
 					this.sortedChats = this.chats.sort((a, b) => {
-						const dateA = a.messages[a.messages.length - 1] ? new Date(a.messages[a.messages.length - 1].date) : new Date(0);
-						const dateB = b.messages[b.messages.length - 1] ? new Date(b.messages[b.messages.length - 1].date) : new Date(0);
+						const dateA = a.messages && a.messages.length > 0 ? new Date(a.messages[a.messages.length - 1].date) : new Date(0);
+						const dateB = b.messages && b.messages.length > 0 ? new Date(b.messages[b.messages.length - 1].date) : new Date(0);
 						return dateB - dateA;
 					});
 				}
@@ -199,12 +200,26 @@ export default {
 				<div v-if= "showGroupForm == false">
 					<div v-for="chat in sortedChats" :key="chat.id" style="position: relative">
 						<button type="button" class="btn" @click="openChat(chat)">
-							<img :src="displayChatPic(chat)" alt="User Profile" class="rounded-circle" width="40" height="40">
-							<div>{{ displayMemberName(chat) }}</div>
-							<div v-if="chat.messages!=null" style="display: inline-block; text-align: left; margin-left: 10px;">
-								<small v-if="chat.messages[chat.messages.length - 1]" class="text-muted">
-									{{ displaySenderName(chat.messages[chat.messages.length - 1]) }} - {{ chat.messages[chat.messages.length - 1].content.slice(0,32) }} - {{ new Date(chat.messages[chat.messages.length - 1].date).toLocaleString() }}
-								</small>
+							<div style="display: flex; align-items: center;">
+								<div style="text-align: center;">
+									<img :src="displayChatPic(chat)" alt="User Profile" class="rounded-circle" width="40" height="40">
+									<br>
+									<span>{{ displayMemberName(chat) }}</span>
+								</div>
+								<div style="margin-left: 20px;">
+									<div v-if="chat.messages != null" style="text-align: left;">
+										<small v-if="chat.messages[0]" class="text-muted">
+											{{ displaySenderName(chat.messages[0]) }} - 
+											<span v-if="chat.messages[0].content.startsWith('data:image/')">
+												<img :src="chat.messages[0].content" alt="Image" style="max-width: 100px; max-height: 100px;">
+											</span>
+											<span v-else>
+												{{ chat.messages[0].content.slice(0, 32) }}
+											</span> <br>
+											{{ new Date(chat.messages[0].date).toLocaleString() }}
+										</small>
+									</div>
+								</div>
 							</div>
 						</button> <br>
 					</div>

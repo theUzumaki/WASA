@@ -34,13 +34,22 @@ paths:
               $ref: "#/components/schemas/UserName"
         required: true
       responses:
+        '200':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Id"
         '201':
           description: User log-in action successful
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Id"
-
+        '400':
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
   /users/{id}/name:
     parameters:
         - $ref: "#/components/parameters/user_id"
@@ -63,6 +72,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/picture:
     parameters:
@@ -86,6 +99,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/search/{searchquery}:
     parameters:
@@ -101,11 +118,15 @@ paths:
         Gets the user with the name in path
       responses:
         "200": 
-          description: Users found
+          description: User found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsersCollection"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/Fivezerozeroresp"
 
 
   /users/{id}/groups/{group_id}:
@@ -123,6 +144,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
     put:
       tags: ["groups operations"]
       operationId: addToGroup
@@ -131,9 +154,21 @@ paths:
       summary: joins the group
       description: |
         Joins the specified group
+      requestBody:
+        description: The user to add
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "505":
+          $ref: "#/components/responses/fivezerozero"
+
   /users/{id}/groups/{group_id}/name:
     parameters:
         - $ref: "#/components/parameters/user_id"
@@ -156,8 +191,10 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/twozeroone"
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/groups/{group_id}/picture:
     parameters:
@@ -179,10 +216,12 @@ paths:
               $ref: "#/components/schemas/Chat"
         required: true
       responses:
-        "201":
-          $ref: "#/components/responses/twozeroone"
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
+        "200":
+          $ref: "#/components/responses/twohund"
+        "400":
+          $ref: '#/components/responses/fourzerozero'
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/conversations:
     parameters:
@@ -205,9 +244,17 @@ paths:
         description: Person or people to chat with
       responses:
         "201":
-          $ref: '#/components/responses/twozeroone'
+          description: Chat created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chat"
         "401":
           $ref: '#/components/responses/UnauthorizedError'
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
     get:
       tags: ["chats operations"]
       operationId: getMyConversations
@@ -223,6 +270,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ChatCollection"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/conversations/{chat_id}:
     parameters:
@@ -243,6 +294,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Chat"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
     post:
       tags: ["message operations"]
       operationId: sendMessage
@@ -260,7 +315,15 @@ paths:
         required: true
       responses:
         "200":
-          $ref: "#/components/responses/twohund"
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Chat"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/conversations/{chat_id}/message/{message_id}:
     parameters:
@@ -285,8 +348,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
-        "404":
-          $ref: "#/components/responses/fourzerofour"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
     delete:
       tags: ["message operations"]
       operationId: deleteMessage
@@ -298,6 +363,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
   /users/{id}/conversations/{chat_id}/message/{message_id}/comment:
     parameters:
@@ -322,6 +391,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
     delete:
       tags: ["message operations"]
       operationId: uncommentMessage
@@ -333,6 +406,10 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/twohund"
+        "400":
+          $ref: "#/components/responses/fourzerozero"
+        "500":
+          $ref: "#/components/responses/fivezerozero"
 
 
 
@@ -618,6 +695,17 @@ components:
       pattern: '^.*?$'
       example: Action executed succesfully
       description: String of information
+    Fourzerozeroresp:
+      type: object
+      properties:
+        trace_four:
+          type: string
+          pattern: '^.*?$'
+          minLength: 1
+          maxLength: 100
+          example: Bad request
+          description: String of information
+      description: String of information
     Fourzerofourresp:
       type: object
       properties:
@@ -627,6 +715,17 @@ components:
           minLength: 1
           maxLength: 100
           example: Not found
+          description: String of information
+      description: String of information
+    fivezerozeroresp:
+      type: object
+      properties:
+        trace_five:
+          type: string
+          pattern: '^.*?$'
+          minLength: 1
+          maxLength: 100
+          example: Server error
           description: String of information
       description: String of information
     Unauthorizedresp:
@@ -653,12 +752,24 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Chat"
+    fourzerozero:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Fourzerozeroresp"
     fourzerofour:
       description: Resource not found
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Fourzerofourresp"
+    fivezerozero:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Fivezerozeroresp"
     UnauthorizedError:
       description: Access token is missing or invalid
       content: 

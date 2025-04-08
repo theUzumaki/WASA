@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -60,7 +59,6 @@ func (rt *_router) sendMessage(w http.ResponseWriter, r *http.Request, ps httpro
 
 	chat, err := rt.db.SendMessage(message, id)
 	if err != nil {
-		log.Default().Println("sendMessage: ", err)
 		http.Error(w, "Internal server error - database", http.StatusInternalServerError)
 		return
 	}

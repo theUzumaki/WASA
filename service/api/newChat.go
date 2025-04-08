@@ -31,7 +31,7 @@ func (rt *_router) newChat(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var valid = regexp.MustCompile("^.*?$").MatchString(chat.Name)
 	if !valid {
-		http.Error(w, "Chat name not valid", http.StatusExpectationFailed)
+		http.Error(w, "Chat name not valid", http.StatusBadRequest)
 		return
 	}
 
