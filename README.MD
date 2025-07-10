@@ -1,1 +1,1 @@
-Web and Software Architecture project for Computer Science course 
+Web and Software Architecture project for Computer Science Degree, A.Y. 2024/2025 La Sapienza 
